@@ -1,0 +1,43 @@
+type Usuario @table {
+  nombreDeUsuario: String!
+  fechaCreacion: Timestamp!
+  nombreCompleto: String
+  fechaNacimiento: Date
+  email: String
+  numeroTelefono: String
+}
+
+type Certificacion @table {
+  usuario: Usuario
+  tipoCertificacion: TipoCertificacion!
+  fechaEmision: Date!
+  fechaVencimiento: Date!
+  fechaCreacion: Timestamp!
+  institucionEmisora: String
+  numeroReferencia: String
+  descripcion: String
+}
+
+type Documento @table {
+  certificacion: Certificacion
+  urlArchivo: String!
+  nombreArchivo: String!
+  tipoArchivo: String!
+  fechaSubida: Timestamp!
+  descripcion: String
+}
+
+type TipoCertificacion @table {
+  nombreTipo: String!
+  fechaCreacion: Timestamp!
+  descripcion: String
+}
+
+type Notificacion @table {
+  usuario: Usuario
+  certificacion: Certificacion
+  mensaje: String!
+  fechaNotificacion: Timestamp!
+  leido: Boolean!
+  tipoNotificacion: String
+}

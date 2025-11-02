@@ -1,4 +1,7 @@
 @import "tailwindcss";
 @import "flowbite/src/themes/default";
 @plugin "flowbite/plugin";
-@source "../node_modules/flowbite";
+@source "../node_modules/flowbite"; 
+
+/* Estilos globales adicionales para el login */
+body{ font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial }

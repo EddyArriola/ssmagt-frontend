@@ -1,0 +1,413 @@
+<div class="container">
+    
+    <div class="header">
+        <h1 class="title">
+            <span *ngIf="!mostrarSolicitudesRechazadas">{{ isMedicoUser ? 'Tarjetas del Centro' : 'Mis Tarjetas' }}</span>
+            <span *ngIf="mostrarSolicitudesRechazadas">{{ isMedicoUser ? 'Solicitudes Rechazadas del Centro' : 'Mis Solicitudes Rechazadas' }}</span>
+        </h1>
+        <p class="subtitle" *ngIf="isMedicoUser && !mostrarSolicitudesRechazadas">Tarjetas aprobadas de tu centro de salud</p>
+        <p class="subtitle" *ngIf="!isMedicoUser && !mostrarSolicitudesRechazadas">Consulta de tarjetas aprobadas</p>
+        <p class="subtitle" *ngIf="isMedicoUser && mostrarSolicitudesRechazadas">Solicitudes rechazadas en tu centro de salud</p>
+        <p class="subtitle" *ngIf="!isMedicoUser && mostrarSolicitudesRechazadas">Solicitudes que han sido rechazadas</p>
+    </div>
+
+    <!-- Filtros y búsqueda -->
+    <div class="filters-section">
+        <div class="filters-row">
+            <!-- Botón para mostrar solicitudes rechazadas -->
+            <div class="filter-group">
+                <button 
+                    class="toggle-rechazadas-btn" 
+                    [class.active]="mostrarSolicitudesRechazadas"
+                    (click)="toggleSolicitudesRechazadas()"
+                    title="Ver solicitudes rechazadas">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg>
+                    {{ mostrarSolicitudesRechazadas ? 'Ver Tarjetas Aprobadas' : 'Ver Solicitudes Rechazadas' }}
+                </button>
+            </div>
+
+            <!-- Dropdown personalizado para Tipo -->
+            <div class="filter-group" *ngIf="!mostrarSolicitudesRechazadas">
+                <div class="custom-dropdown">
+                    <button class="dropdown-button" (click)="toggleTipoDropdown()">
+                        {{ getTipoLabel() }}
+                        <svg class="dropdown-arrow" [class.rotated]="showTipoDropdown" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 8 4 4 4-4"/>
+                        </svg>
+                    </button>
+                    <div class="dropdown-menu" *ngIf="showTipoDropdown">
+                        <div class="dropdown-option" 
+                             *ngFor="let option of tipoOptions" 
+                             (click)="selectTipo(option)"
+                             [class.selected]="selectedTipo === option.value">
+                            {{ option.label }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dropdown para Centro (solo ciudadanos) -->
+            <div class="filter-group" *ngIf="!isMedicoUser">
+                <div class="custom-dropdown">
+                    <button class="dropdown-button" (click)="toggleCentroDropdown()">
+                        {{ getCentroLabel() }}
+                        <svg class="dropdown-arrow" [class.rotated]="showCentroDropdown" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 8 4 4 4-4"/>
+                        </svg>
+                    </button>
+                    <div class="dropdown-menu" *ngIf="showCentroDropdown">
+                        <div class="dropdown-option" 
+                             *ngFor="let option of centroOptions" 
+                             (click)="selectCentro(option)"
+                             [class.selected]="selectedCentro === option.value">
+                            {{ option.label }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-group">
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    placeholder="Correlativo" 
+                    [(ngModel)]="searchCorrelativo">
+                <button class="search-button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de tarjetas -->
+    <div class="cards-container" *ngIf="filteredTarjetas.length > 0 && !mostrarSolicitudesRechazadas">
+        <div class="tarjeta-card" *ngFor="let tarjeta of filteredTarjetas">
+            <div class="card-header">
+                <div class="card-avatar">
+                    <div class="avatar-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                </div>
+                <div class="card-title-section">
+                    <h3 class="card-title">{{ getTarjetaInfo(tarjeta, 'tipo') }}</h3>
+                    <span class="card-subtitle">{{ getTarjetaInfo(tarjeta, 'ciudadano') }}</span>
+                </div>
+                <div class="card-status">
+                    <span class="status-badge" [class]="getStatusClass(getTarjetaEstado(tarjeta))">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20,6 9,17 4,12"></polyline>
+                        </svg>
+                        {{ getTarjetaInfo(tarjeta, 'estado') }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Información del Paciente/Ciudadano -->
+            <div class="patient-info-section" *ngIf="tarjeta.solicitud_tarjeta?.usuario">
+                <h4 class="patient-info-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    {{ isMedicoUser ? 'Datos del Ciudadano' : 'Datos del Paciente' }}
+                </h4>
+                <div class="patient-info-grid">
+                    <div class="patient-info-item">
+                        <span class="patient-label">CUI:</span>
+                        <span class="patient-value">{{ tarjeta.solicitud_tarjeta?.usuario?.cui || 'No disponible' }}</span>
+                    </div>
+                    <div class="patient-info-item">
+                        <span class="patient-label">Email:</span>
+                        <span class="patient-value">{{ tarjeta.solicitud_tarjeta?.usuario?.email || 'No disponible' }}</span>
+                    </div>
+                    <div class="patient-info-item">
+                        <span class="patient-label">Teléfono:</span>
+                        <span class="patient-value">{{ tarjeta.solicitud_tarjeta?.usuario?.telefono || 'No disponible' }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <div class="info-grid">
+                    <div class="info-item" *ngIf="!isMedicoUser">
+                        <div class="info-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 11H3v5a2 2 0 0 0 2 2h6V11Z"></path>
+                                <path d="M9 18h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2 2v4Z"></path>
+                            </svg>
+                        </div>
+                        <div class="info-content">
+                            <span class="info-label">Centro de Salud</span>
+                            <span class="info-value">{{ getTarjetaInfo(tarjeta, 'centro') }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10,9 9,9 8,9"></polyline>
+                            </svg>
+                        </div>
+                        <div class="info-content">
+                            <span class="info-label">No. Solicitud</span>
+                            <span class="info-value">#{{ getTarjetaInfo(tarjeta, 'correlativo') }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                        </div>
+                        <div class="info-content">
+                            <span class="info-label">{{ isMedicoUser ? 'Fecha de Emisión' : 'Fecha de Solicitud' }}</span>
+                            <span class="info-value">{{ getTarjetaInfo(tarjeta, isMedicoUser ? 'fechaEmision' : 'fechaSolicitud') }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Información adicional para médicos -->
+                    <div class="info-item" *ngIf="isMedicoUser">
+                        <div class="info-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                        </div>
+                        <div class="info-content">
+                            <span class="info-label">Fecha de Vencimiento</span>
+                            <span class="info-value">{{ getTarjetaInfo(tarjeta, 'fechaVencimiento') }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón QR para tarjetas aprobadas -->
+                <div class="card-actions" *ngIf="getTarjetaEstado(tarjeta) === 2">
+                    <button class="qr-button" (click)="openQRModal(tarjeta)" title="Ver código QR">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="5" height="5"></rect>
+                            <rect x="16" y="3" width="5" height="5"></rect>
+                            <rect x="3" y="16" width="5" height="5"></rect>
+                            <path d="m21 21-3.5-3.5"></path>
+                            <path d="m14 12h7v7"></path>
+                            <path d="M3 12h6"></path>
+                            <path d="M9 3v18"></path>
+                        </svg>
+                        Ver QR
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensaje cuando no hay tarjetas -->
+    <div class="empty-message" *ngIf="filteredTarjetas.length === 0 && !mostrarSolicitudesRechazadas">
+        <div class="empty-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                <path d="M7 15h10M7 11h4"></path>
+            </svg>
+        </div>
+        <h3>{{ isMedicoUser ? 'No hay tarjetas en este centro' : 'No tienes tarjetas aprobadas' }}</h3>
+        <p>{{ isMedicoUser ? 'No se encontraron tarjetas aprobadas para este centro de salud.' : 'Aún no tienes tarjetas aprobadas. Puedes solicitar una nueva tarjeta.' }}</p>
+        <button class="btn-primary" *ngIf="!isMedicoUser" routerLink="/nueva-solicitud">
+            Solicitar Nueva Tarjeta
+        </button>
+    </div>
+
+    <!-- Sección de Solicitudes Rechazadas -->
+    <div class="solicitudes-rechazadas-section" *ngIf="mostrarSolicitudesRechazadas">
+        <div class="rechazadas-header">
+            <h2 class="rechazadas-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                {{ isMedicoUser ? 'Solicitudes Rechazadas del Centro' : 'Mis Solicitudes Rechazadas' }}
+            </h2>
+            <p class="rechazadas-subtitle">
+                {{ isMedicoUser ? 'Solicitudes de tarjetas que han sido rechazadas en tu centro' : 'Revisa las solicitudes que han sido rechazadas y los motivos' }}
+            </p>
+        </div>
+
+        <!-- Lista de solicitudes rechazadas -->
+        <div class="rechazadas-container" *ngIf="solicitudesRechazadas.length > 0">
+            <div class="solicitud-rechazada-card" *ngFor="let solicitud of solicitudesRechazadas">
+                <div class="rechazada-header">
+                    <div class="rechazada-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="15" y1="9" x2="9" y2="15"></line>
+                            <line x1="9" y1="9" x2="15" y2="15"></line>
+                        </svg>
+                    </div>
+                    <div class="rechazada-info">
+                        <h3 class="rechazada-title">{{ getTipoTarjetaRechazada(solicitud.tipo_tarjeta) }}</h3>
+                        <span class="rechazada-subtitle">{{ getCiudadanoInfoRechazada(solicitud) }}</span>
+                    </div>
+                    <div class="rechazada-status">
+                        <span class="status-badge status-rechazada">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                            </svg>
+                            Rechazada
+                        </span>
+                    </div>
+                </div>
+
+                <div class="rechazada-body">
+                    <div class="rechazada-info-grid">
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14,2 14,8 20,8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10,9 9,9 8,9"></polyline>
+                                </svg>
+                            </div>
+                            <div class="info-content">
+                                <span class="info-label">No. Solicitud</span>
+                                <span class="info-value">#{{ solicitud.id_solicitud.toString().padStart(6, '0') }}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                            </div>
+                            <div class="info-content">
+                                <span class="info-label">Fecha de Solicitud</span>
+                                <span class="info-value">{{ getFechaSolicitudRechazadaFormateada(solicitud.fecha_solicitud) }}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                            </div>
+                            <div class="info-content">
+                                <span class="info-label">Fecha de Rechazo</span>
+                                <span class="info-value">{{ getFechaRechazoFormateada(solicitud.fecha_rechazo) }}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-item" *ngIf="!isMedicoUser">
+                            <div class="info-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 11H3v5a2 2 0 0 0 2 2h6V11Z"></path>
+                                    <path d="M9 18h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2 2v4Z"></path>
+                                </svg>
+                            </div>
+                            <div class="info-content">
+                                <span class="info-label">Centro de Salud</span>
+                                <span class="info-value">{{ getCentroSaludRechazada(solicitud) }}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-item" *ngIf="!isMedicoUser && solicitud.medico">
+                            <div class="info-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                            <div class="info-content">
+                                <span class="info-label">Médico Revisor</span>
+                                <span class="info-value">{{ getMedicoRechazo(solicitud) }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Motivo de rechazo -->
+                    <div class="rechazo-motivo">
+                        <h4 class="motivo-titulo">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            Motivo del Rechazo
+                        </h4>
+                        <div class="motivo-badge">{{ getMotivoRechazoLegible(solicitud.motivo_rechazo) }}</div>
+                        <div class="motivo-observaciones" *ngIf="solicitud.observaciones">
+                            <p>{{ solicitud.observaciones }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mensaje cuando no hay solicitudes rechazadas -->
+        <div class="empty-rechazadas" *ngIf="solicitudesRechazadas.length === 0">
+            <div class="empty-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 6v6l4 2"></path>
+                </svg>
+            </div>
+            <h3>{{ isMedicoUser ? 'No hay solicitudes rechazadas en este centro' : 'No tienes solicitudes rechazadas' }}</h3>
+            <p>{{ isMedicoUser ? 'Todas las solicitudes de este centro han sido procesadas correctamente.' : '¡Excelente! No tienes solicitudes rechazadas. Todas tus solicitudes han sido aprobadas.' }}</p>
+        </div>
+    </div>
+
+    <!-- Modal QR -->
+    <div class="qr-modal-overlay" *ngIf="showQRModal" (click)="closeQRModal()">
+        <div class="qr-modal-content" (click)="$event.stopPropagation()">
+            <div class="qr-modal-header">
+                <h2>Código QR de la Tarjeta</h2>
+                <button class="close-button" (click)="closeQRModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="qr-modal-body">
+                <app-tarjeta-qr 
+                    *ngIf="selectedTarjetaForQR"
+                    [tarjeta]="selectedTarjetaForQR"
+                    [cuiCiudadano]="getCiudadanoCUI(selectedTarjetaForQR)"
+                    size="large"
+                    [showDownload]="true"
+                    [showDetails]="true"
+                    [showMobileOptions]="true">
+                </app-tarjeta-qr>
+            </div>
+        </div>
+    </div>
+
+</div>

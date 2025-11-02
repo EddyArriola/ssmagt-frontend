@@ -1,12 +1,22 @@
-.text-white {
-        background-color: #9dd3cf; /* Color original del botón */
-        padding: 10px;
-        border: 1px solid #9dd3cf;
-        border-radius: 10px;
+/* Si tu navbar ocupa el 20% o un ancho fijo, define ese margen */
+app-navbar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 250px; /* ajusta según el ancho real de tu barra */
+  height: 100vh;
+  background-color: #a3d9d3; /* color de tu barra lateral */
+  z-index: 1000;
 }
 
-.text-white:hover {
-        background-color: white; /* Color del botón al pasar el cursor */
-        color: #9dd3cf; /* Color del texto al pasar el cursor */
-        cursor: pointer; /* Cambia el cursor para indicar que es clickeable */
+/* Contenido principal */
+.main-wrapper {
+  margin-left: 250px; /* mismo valor que el ancho del navbar */
+  padding: 20px;
+}
+
+/* Si ocultas el sidebar (por ejemplo en login), quita el margen */
+.main-wrapper.no-sidebar {
+        margin-left: 0;
+        padding: 0;
 }

@@ -1,0 +1,502 @@
+.qr-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Tamaños del contenedor */
+.qr-small {
+  padding: 16px;
+  max-width: 200px;
+}
+
+.qr-medium {
+  padding: 24px;
+  max-width: 300px;
+}
+
+.qr-large {
+  padding: 32px;
+  max-width: 450px;
+}
+
+/* Header */
+.qr-header {
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 16px;
+}
+
+.qr-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+
+.qr-small .qr-title {
+  font-size: 16px;
+}
+
+.qr-large .qr-title {
+  font-size: 24px;
+}
+
+.qr-id {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* QR Code Section */
+.qr-code-section {
+  margin-bottom: 20px;
+}
+
+/* Loading */
+.qr-loading {
+  padding: 40px 20px;
+  color: #6b7280;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e5e7eb;
+  border-top: 3px solid #7db4a6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 12px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.qr-loading p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Error */
+.qr-error {
+  padding: 20px;
+  color: #dc2626;
+  text-align: center;
+}
+
+.error-icon {
+  margin-bottom: 12px;
+  color: #dc2626;
+}
+
+.qr-error p {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+}
+
+.retry-button {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.retry-button:hover {
+  background-color: #b91c1c;
+}
+
+/* QR Display */
+.qr-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.qr-image-container {
+  position: relative;
+  display: inline-block;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  background: white;
+}
+
+.qr-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.qr-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(220, 38, 38, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.vencida-badge {
+  background: white;
+  color: #dc2626;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  transform: rotate(-15deg);
+}
+
+/* QR Toggle Buttons */
+.qr-toggle {
+  margin-bottom: 16px;
+}
+
+.toggle-buttons {
+  display: flex;
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 4px;
+  gap: 2px;
+}
+
+.toggle-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn.active {
+  background: white;
+  color: #7db4a6;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-btn:hover:not(.active) {
+  color: #4b5563;
+}
+
+/* Mobile Indicator */
+.mobile-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.hd-badge {
+  background: linear-gradient(135deg, #7db4a6, #6ba394);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Action Buttons */
+.qr-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+  justify-content: center;
+}
+
+/* Primary Button (Standard Download) */
+.action-button.primary {
+  background-color: #7db4a6;
+  color: white;
+}
+
+.action-button.primary:hover {
+  background-color: #6ba394;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(125, 180, 166, 0.3);
+}
+
+/* Mobile Button */
+.action-button.mobile {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+}
+
+.action-button.mobile:hover {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+/* Secondary Buttons */
+.action-button.secondary {
+  background-color: #f8fafc;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+
+.action-button.secondary:hover {
+  background-color: #f1f5f9;
+  color: #4b5563;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.action-button:active {
+  transform: translateY(0);
+}
+
+/* Legacy Download Button (mantener para compatibilidad) */
+.download-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #7db4a6;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.download-button:hover {
+  background-color: #6ba394;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(125, 180, 166, 0.3);
+}
+
+.download-button:active {
+  transform: translateY(0);
+}
+
+/* Details Section */
+.qr-details {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 16px;
+  text-align: left;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+/* Estados */
+.estado-aprobada {
+  color: #10b981 !important;
+}
+
+.estado-vencida {
+  color: #dc2626 !important;
+}
+
+.estado-cancelada {
+  color: #f59e0b !important;
+}
+
+.estado-pendiente {
+  color: #6b7280 !important;
+}
+
+.text-warning {
+  color: #f59e0b !important;
+}
+
+/* Instructions */
+.qr-instructions {
+  margin-top: 16px;
+  padding: 12px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border-left: 4px solid #7db4a6;
+}
+
+.instruction-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 12px;
+  color: #4b5563;
+  line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .qr-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .action-button {
+    min-width: unset;
+    width: 100%;
+  }
+  
+  .toggle-buttons {
+    gap: 1px;
+  }
+  
+  .toggle-btn {
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .qr-container {
+    padding: 16px;
+    margin: 0 12px;
+  }
+  
+  .qr-medium {
+    max-width: 100%;
+  }
+  
+  .qr-large {
+    max-width: 100%;
+    padding: 20px;
+  }
+  
+  .qr-title {
+    font-size: 18px;
+  }
+  
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .download-button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .qr-actions {
+    gap: 6px;
+  }
+  
+  .action-button {
+    padding: 10px 12px;
+    font-size: 11px;
+  }
+  
+  .toggle-btn {
+    font-size: 10px;
+    padding: 6px;
+  }
+  
+  .toggle-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .action-button svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Animaciones mejoradas */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.qr-display {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.qr-actions {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Estados de carga para botones */
+.action-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.action-button:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Mejoras de accesibilidad */
+.action-button:focus {
+  outline: 2px solid #7db4a6;
+  outline-offset: 2px;
+}
+
+.toggle-btn:focus {
+  outline: 2px solid #7db4a6;
+  outline-offset: 2px;
+}

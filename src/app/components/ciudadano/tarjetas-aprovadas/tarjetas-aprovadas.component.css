@@ -1,0 +1,1361 @@
+.container {
+  padding: 24px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 400;
+  color: #7db4a6;
+  margin: 0;
+  text-transform: lowercase;
+}
+
+.filters-section {
+  margin-bottom: 24px;
+}
+
+.filters-row {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.filter-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Dropdown personalizado */
+.custom-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-button {
+  background-color: #e8e5da;
+  border: 2px solid #d0c7b8;
+  border-radius: 8px;
+  padding: 12px 40px 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  min-width: 160px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+}
+
+.dropdown-button:hover {
+  border-color: #b8a995;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-button:focus {
+  outline: none;
+  border-color: #7db4a6;
+  box-shadow: 0 0 0 3px rgba(125, 180, 166, 0.2), 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-arrow {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease;
+  margin-left: 8px;
+}
+
+.dropdown-arrow.rotated {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #e8e5da;
+  border: 2px solid #d0c7b8;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdown-option {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #d0c7b8;
+}
+
+.dropdown-option:last-child {
+  border-bottom: none;
+}
+
+.dropdown-option:hover {
+  background-color: #ddd6c8;
+}
+
+.dropdown-option.selected {
+  background-color: #7db4a6;
+  color: white;
+}
+
+/* Scrollbar personalizado para el dropdown */
+.dropdown-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdown-menu::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.search-group {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.search-input {
+  background-color: #e8e5da;
+  border: 1px solid #d0c7b8;
+  border-radius: 6px 0 0 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #666;
+  min-width: 180px;
+  border-right: none;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #7db4a6;
+  box-shadow: 0 0 0 2px rgba(125, 180, 166, 0.2);
+}
+
+.search-input::placeholder {
+  color: #999;
+}
+
+.search-button {
+  background-color: #e8e5da;
+  border: 1px solid #d0c7b8;
+  border-radius: 0 6px 6px 0;
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  border-left: none;
+}
+
+.search-button:hover {
+  background-color: #ddd6c8;
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 24px;
+  padding: 0;
+}
+
+/* Nuevos estilos para tarjetas mejoradas */
+.tarjeta-card {
+  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.tarjeta-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+  border-color: #7db4a6;
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  padding: 20px 20px 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 1px solid #e9ecef;
+  gap: 16px;
+}
+
+.card-avatar {
+  flex-shrink: 0;
+}
+
+.avatar-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #7db4a6, #6ba394);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 12px rgba(125, 180, 166, 0.3);
+}
+
+.card-title-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d5a87;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
+
+.card-subtitle {
+  font-size: 14px;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.card-status {
+  flex-shrink: 0;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.status-aprobada {
+  background: linear-gradient(135deg, #d4edda, #c3e6cb);
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.status-badge.status-pendiente {
+  background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.status-badge.status-rechazada {
+  background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.status-badge.status-default {
+  background: linear-gradient(135deg, #e2e3e5, #d6d8db);
+  color: #383d41;
+  border: 1px solid #d6d8db;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.info-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 3px solid #7db4a6;
+  transition: all 0.2s ease;
+}
+
+.info-item:hover {
+  background-color: #e9ecef;
+  transform: translateX(2px);
+}
+
+.info-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #7db4a6;
+  border-radius: 6px;
+  color: white;
+  margin-top: 2px;
+}
+
+.info-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.info-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.info-value {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2d5a87;
+  line-height: 1.3;
+}
+
+.card-footer {
+  padding: 16px 20px 20px;
+  border-top: 1px solid #e9ecef;
+  background-color: #f8f9fa;
+}
+
+.btn-detalle {
+  width: 100%;
+  background: linear-gradient(135deg, #7db4a6, #6ba394);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(125, 180, 166, 0.3);
+}
+
+.btn-detalle:hover {
+  background: linear-gradient(135deg, #6ba394, #5a9284);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(125, 180, 166, 0.4);
+}
+
+.btn-detalle:active {
+  transform: translateY(0);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .cards-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .card-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .card-title-section {
+    text-align: center;
+  }
+  
+  .card-status {
+    align-self: center;
+  }
+  
+  .info-grid {
+    gap: 12px;
+  }
+  
+  .info-item {
+    padding: 10px;
+  }
+}
+
+.empty-message {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-style: italic;
+}
+
+/* Estilos del modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background-color: #9dd3cf;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #2d5a87;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  z-index: 1001;
+}
+
+.modal-close-btn:hover {
+  background-color: rgba(45, 90, 135, 0.1);
+  transform: scale(1.1);
+}
+
+.modal-header {
+  padding: 32px 32px 16px;
+  text-align: center;
+}
+
+.modal-title {
+  color: #2d5a87;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.modal-body {
+  padding: 0 32px 32px;
+}
+
+.tarjeta-info {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.info-row {
+  margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.info-row:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
+  color: #2d5a87;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: lowercase;
+  min-width: fit-content;
+}
+
+.info-value {
+  color: #333;
+  font-weight: 400;
+  font-size: 14px;
+  flex: 1;
+}
+
+/* Estilo especial para el correlativo */
+.info-row.correlativo-row {
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.info-row.correlativo-row .info-label {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2d5a87;
+  text-align: center;
+}
+
+/* Divisor entre secciones */
+.info-divider {
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 20px 0;
+  opacity: 0.6;
+}
+
+/* Estilo especial para filas que son solo etiquetas */
+.info-row.label-only {
+  justify-content: flex-start;
+}
+
+.info-row.label-only .info-label {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .filters-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-group {
+    margin-left: 0;
+    margin-top: 12px;
+  }
+  
+  .search-input {
+    min-width: 100%;
+  }
+
+  .modal-content {
+    width: 95%;
+    margin: 20px;
+  }
+
+  .modal-header,
+  .modal-body {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .modal-title {
+    font-size: 20px;
+  }
+
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .info-label,
+  .info-value {
+    width: 100%;
+  }
+}
+
+/* Estilos para el mensaje vacío mejorado */
+.empty-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 24px;
+}
+
+.empty-icon {
+  margin-bottom: 24px;
+  color: #9ca3af;
+}
+
+.empty-message h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 8px 0;
+}
+
+.empty-message p {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0 0 24px 0;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+.empty-message .btn-primary {
+  background-color: #7db4a6;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.empty-message .btn-primary:hover {
+  background-color: #6ba394;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(125, 180, 166, 0.3);
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 8px 0 0 0;
+}
+
+/* Estilos para acciones de tarjeta */
+.card-actions {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: center;
+}
+
+.qr-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #7db4a6;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.qr-button:hover {
+  background-color: #6ba394;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(125, 180, 166, 0.3);
+}
+
+.qr-button:active {
+  transform: translateY(0);
+}
+
+/* Estilos para el modal QR */
+.qr-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.qr-modal-content {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.qr-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px 0 24px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 0;
+  padding-bottom: 16px;
+}
+
+.qr-modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.close-button:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.qr-modal-body {
+  padding: 24px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Estilos específicos para QR móvil en modal */
+.qr-modal-body ::ng-deep .qr-container {
+  margin: 0;
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
+}
+
+.qr-modal-body ::ng-deep .qr-actions {
+  margin-top: 20px;
+}
+
+.qr-modal-body ::ng-deep .action-button {
+  transition: all 0.2s ease;
+}
+
+.qr-modal-body ::ng-deep .action-button:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Responsive modal */
+@media (max-width: 640px) {
+  .qr-modal-overlay {
+    padding: 12px;
+  }
+  
+  .qr-modal-content {
+    border-radius: 12px;
+    max-height: 95vh;
+  }
+  
+  .qr-modal-header {
+    padding: 16px 16px 0 16px;
+  }
+  
+  .qr-modal-header h2 {
+    font-size: 18px;
+  }
+  
+  .qr-modal-body {
+    padding: 16px;
+    max-height: 90vh;
+  }
+  
+  .qr-modal-body ::ng-deep .qr-actions {
+    gap: 8px;
+    flex-direction: column;
+  }
+  
+  .qr-modal-body ::ng-deep .action-button {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+  }
+  
+  .qr-modal-body ::ng-deep .toggle-buttons {
+    margin-bottom: 12px;
+  }
+}
+
+/* =============== ESTILOS PARA INFORMACIÓN DEL PACIENTE =============== */
+
+.patient-info-section {
+  margin: 16px 20px 20px 20px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f0f8f6 0%, #e6f4f1 100%);
+  border-radius: 12px;
+  border: 1px solid #d1e7dd;
+  box-shadow: 0 2px 8px rgba(125, 180, 166, 0.1);
+}
+
+.patient-info-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2d5a87;
+  margin: 0 0 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #7db4a6;
+}
+
+.patient-info-title svg {
+  color: #7db4a6;
+}
+
+.patient-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.patient-info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.patient-info-item:hover {
+  border-color: #7db4a6;
+  box-shadow: 0 2px 6px rgba(125, 180, 166, 0.15);
+}
+
+.patient-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #495057;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.patient-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2d5a87;
+  text-align: right;
+  word-break: break-word;
+}
+
+/* Responsive para información del paciente */
+@media (max-width: 768px) {
+  .patient-info-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .patient-info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 10px 12px;
+  }
+  
+  .patient-value {
+    text-align: left;
+    font-size: 13px;
+  }
+  
+  .patient-info-title {
+    font-size: 15px;
+  }
+  
+  .patient-info-section {
+    margin: 12px 16px 16px 16px;
+    padding: 12px;
+  }
+}
+
+/* Estilos para la información del paciente */
+.patient-info-section {
+  background: linear-gradient(135deg, #f8fcfb 0%, #e8f4f1 100%);
+  border: 1px solid #d1e7dd;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 20px;
+}
+
+.patient-info-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2d5a87;
+  margin: 0 0 12px 0;
+}
+
+.patient-info-title svg {
+  color: #7db4a6;
+}
+
+.patient-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.patient-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.patient-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.patient-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2c3e50;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Responsive para información del paciente */
+@media (max-width: 768px) {
+  .patient-info-section {
+    margin: 16px 12px;
+    padding: 12px;
+  }
+  
+  .patient-info-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .patient-info-title {
+    font-size: 14px;
+  }
+  
+  .patient-value {
+    font-size: 13px;
+    padding: 4px 8px;
+  }
+}
+
+/* =============== ESTILOS PARA BOTÓN DE SOLICITUDES RECHAZADAS =============== */
+
+.toggle-rechazadas-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
+}
+
+.toggle-rechazadas-btn:hover {
+  background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.toggle-rechazadas-btn.active {
+  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.2);
+}
+
+.toggle-rechazadas-btn.active:hover {
+  background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
+}
+
+.toggle-rechazadas-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.toggle-rechazadas-btn.active svg {
+  transform: rotate(45deg);
+}
+
+/* =============== ESTILOS PARA SECCIÓN DE SOLICITUDES RECHAZADAS =============== */
+
+.solicitudes-rechazadas-section {
+  margin-top: 40px;
+  padding: 24px;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffeaea 100%);
+  border-radius: 16px;
+  border: 1px solid #f8d7da;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rechazadas-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.rechazadas-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #dc3545;
+  margin: 0 0 8px 0;
+}
+
+.rechazadas-title svg {
+  color: #dc3545;
+}
+
+.rechazadas-subtitle {
+  font-size: 16px;
+  color: #6c757d;
+  margin: 0;
+}
+
+.rechazadas-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+/* =============== ESTILOS PARA CARDS DE SOLICITUDES RECHAZADAS =============== */
+
+.solicitud-rechazada-card {
+  background: white;
+  border-radius: 16px;
+  border: 2px solid #f8d7da;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.1);
+}
+
+.solicitud-rechazada-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(220, 53, 69, 0.15);
+  border-color: #dc3545;
+}
+
+.rechazada-header {
+  display: flex;
+  align-items: flex-start;
+  padding: 20px 20px 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 1px solid #f8d7da;
+  gap: 16px;
+}
+
+.rechazada-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.rechazada-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.rechazada-info .rechazada-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d5a87;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
+
+.rechazada-info .rechazada-subtitle {
+  font-size: 14px;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.rechazada-status {
+  flex-shrink: 0;
+}
+
+.status-rechazada {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
+}
+
+.rechazada-body {
+  padding: 20px;
+}
+
+.rechazada-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.rechazada-info-grid .info-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.rechazada-info-grid .info-icon {
+  width: 32px;
+  height: 32px;
+  background: #7db4a6;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.rechazada-info-grid .info-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.rechazada-info-grid .info-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.rechazada-info-grid .info-value {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2d5a87;
+  word-break: break-word;
+}
+
+/* =============== ESTILOS PARA MOTIVO DE RECHAZO =============== */
+
+.rechazo-motivo {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  border: 1px solid #ffeaa7;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.motivo-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #856404;
+  margin: 0 0 12px 0;
+}
+
+.motivo-titulo svg {
+  color: #f39c12;
+}
+
+.motivo-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(243, 156, 18, 0.2);
+}
+
+.motivo-observaciones {
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid rgba(133, 100, 4, 0.2);
+}
+
+.motivo-observaciones p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #495057;
+}
+
+/* =============== ESTILOS PARA MENSAJE VACÍO DE RECHAZADAS =============== */
+
+.empty-rechazadas {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+}
+
+.empty-rechazadas .empty-icon {
+  margin-bottom: 24px;
+}
+
+.empty-rechazadas .empty-icon svg {
+  color: #28a745;
+  opacity: 0.6;
+}
+
+.empty-rechazadas h3 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #28a745;
+  margin: 0 0 12px 0;
+}
+
+.empty-rechazadas p {
+  font-size: 16px;
+  color: #6c757d;
+  margin: 0;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* =============== RESPONSIVE PARA SOLICITUDES RECHAZADAS =============== */
+
+@media (max-width: 768px) {
+  .solicitudes-rechazadas-section {
+    margin-top: 24px;
+    padding: 16px;
+  }
+
+  .rechazadas-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .rechazada-header {
+    padding: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .rechazada-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .rechazada-info-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .rechazada-body {
+    padding: 16px;
+  }
+
+  .toggle-rechazadas-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .rechazadas-title {
+    font-size: 20px;
+  }
+
+  .rechazadas-subtitle {
+    font-size: 14px;
+  }
+}

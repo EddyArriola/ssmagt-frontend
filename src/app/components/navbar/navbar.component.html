@@ -1,0 +1,47 @@
+<aside class="fixed top-0 left-0 z-40 w-56 h-screen bg-[#9dd3cf] flex flex-col items-center shadow-lg">
+  <!-- Logo y título institucional -->
+  <div class="flex flex-col items-center mt-6 mb-8">
+    <img src="logotipo-mspas.png" alt="Logo MSPAS" class="w-50 h-50 mb-2" style="object-fit:contain;" />
+  </div>
+  <!-- Menú de navegación -->
+  <nav class="w-full flex flex-col gap-2 px-4">
+    <!-- Menú para Ciudadano -->
+    <ng-container *ngIf="isCiudadano()">
+      <a routerLink="/inicioCiudadano" class="text-white font-bold px-2">Inicio</a>
+      <a routerLink="/nueva-solicitud" class="text-white font-bold py-2 px-2">Nueva solicitud</a>
+      <a routerLink="/tarjetasAprobadas" class="text-white font-bold py-2 px-2">Tarjetas aprobadas</a>
+
+      <a routerLink="/actualizar-datos" class="text-white font-bold py-2 px-2">Actualizar datos</a>
+      <hr class="border-white/30 my-2">
+      <button (click)="logout()" class="text-white font-bold py-2 px-2 text-left w-full hover:bg-white/10 rounded">Cerrar sesión</button>
+    </ng-container>
+
+    <!-- Menú para Médico -->
+    <ng-container *ngIf="isMedico()">
+      <a routerLink="/inicio-medico" class="text-white font-bold px-2">Inicio</a>
+      <a routerLink="/Solicitudes-pendientes" class="text-white font-bold py-2 px-2">Solicitudes</a>
+      <a routerLink="/tarjetas-aprobadas-centro" class="text-white font-bold py-2 px-2">Tarjetas aprobadas</a>
+      <a routerLink="/requisiciones" class="text-white font-bold py-2 px-2">Requisiciones</a>
+      <hr class="border-white/30 my-2">
+      <button (click)="logout()" class="text-white font-bold py-2 px-2 text-left w-full hover:bg-white/10 rounded">Cerrar sesión</button>
+    </ng-container>
+
+    <!-- Menú para Administrador -->
+    <ng-container *ngIf="isAdministrador()">
+      <a routerLink="/admin" class="text-white font-bold px-2">Administración</a>
+      <a routerLink="/admin/usuarios" class="text-white font-bold py-2 px-2">Usuarios</a>
+      <hr class="border-white/30 my-2">
+      <button (click)="logout()" class="text-white font-bold py-2 px-2 text-left w-full hover:bg-white/10 rounded">Cerrar sesión</button>
+    </ng-container>
+
+    <!-- Menú para Consultor -->
+    <ng-container *ngIf="isConsultor()">
+      <a routerLink="/consultor/nueva-solicitud" class="text-white font-bold py-2 px-2">Nueva solicitud</a>
+      <a routerLink="/consultor/tarjetas-aprobadas" class="text-white font-bold py-2 px-2">Tarjetas aprobadas</a>
+      <a routerLink="/consultor/requisiciones" class="text-white font-bold py-2 px-2">Requisiciones</a>
+      <hr class="border-white/30 my-2">
+      <button (click)="logout()" class="text-white font-bold py-2 px-2 text-left w-full hover:bg-white/10 rounded">Cerrar sesión</button>
+    </ng-container>
+  </nav>
+</aside>
+<!-- Contenido principal queda en el AppComponent -->

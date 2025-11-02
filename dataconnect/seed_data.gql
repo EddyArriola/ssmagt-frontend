@@ -1,0 +1,96 @@
+mutation CreateDemoData @transaction @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public") {
+  tipoCertificacion_insertMany(data: [
+    {
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      nombreTipo: "Example Certification Type 1",
+      descripcion: "This is an example certification type",
+      fechaCreacion: "2024-01-01T00:00:00Z"
+    },
+    {
+      id: "550e8400-e29b-41d4-a716-446655440001",
+      nombreTipo: "Example Certification Type 2",
+      descripcion: "This is another example certification type",
+      fechaCreacion: "2024-01-02T00:00:00Z"
+    }
+  ])
+  usuario_insertMany(data: [
+    {
+      id: "650e8400-e29b-41d4-a716-446655440000",
+      nombreDeUsuario: "demouser1",
+      email: "demouser1@example.com",
+      fechaCreacion: "2024-01-03T00:00:00Z",
+      nombreCompleto: "Demo User One"
+    },
+    {
+      id: "650e8400-e29b-41d4-a716-446655440001",
+      nombreDeUsuario: "demouser2",
+      email: "demouser2@example.com",
+      fechaCreacion: "2024-01-04T00:00:00Z",
+      nombreCompleto: "Demo User Two"
+    }
+  ])
+  certificacion_insertMany(data: [
+    {
+      id: "750e8400-e29b-41d4-a716-446655440000",
+      tipoCertificacionId: "550e8400-e29b-41d4-a716-446655440000",
+      usuarioId: "650e8400-e29b-41d4-a716-446655440000",
+      descripcion: "Example certification 1 for demouser1",
+      fechaCreacion: "2024-01-05T00:00:00Z",
+      fechaEmision: "2024-01-05",
+      fechaVencimiento: "2025-01-05",
+      institucionEmisora: "Example Institute",
+      numeroReferencia: "REF123"
+    },
+    {
+      id: "750e8400-e29b-41d4-a716-446655440001",
+      tipoCertificacionId: "550e8400-e29b-41d4-a716-446655440001",
+      usuarioId: "650e8400-e29b-41d4-a716-446655440001",
+      descripcion: "Example certification 2 for demouser2",
+      fechaCreacion: "2024-01-06T00:00:00Z",
+      fechaEmision: "2024-01-06",
+      fechaVencimiento: "2025-01-06",
+      institucionEmisora: "Another Example Institute",
+      numeroReferencia: "REF456"
+    }
+  ])
+  documento_insertMany(data: [
+    {
+      id: "850e8400-e29b-41d4-a716-446655440000",
+      certificacionId: "750e8400-e29b-41d4-a716-446655440000",
+      descripcion: "Document for example certification 1",
+      fechaSubida: "2024-01-07T00:00:00Z",
+      nombreArchivo: "document1.pdf",
+      tipoArchivo: "pdf",
+      urlArchivo: "http://example.com/document1.pdf"
+    },
+    {
+      id: "850e8400-e29b-41d4-a716-446655440001",
+      certificacionId: "750e8400-e29b-41d4-a716-446655440001",
+      descripcion: "Document for example certification 2",
+      fechaSubida: "2024-01-08T00:00:00Z",
+      nombreArchivo: "document2.pdf",
+      tipoArchivo: "pdf",
+      urlArchivo: "http://example.com/document2.pdf"
+    }
+  ])
+  notificacion_insertMany(data: [
+    {
+      id: "950e8400-e29b-41d4-a716-446655440000",
+      certificacionId: "750e8400-e29b-41d4-a716-446655440000",
+      usuarioId: "650e8400-e29b-41d4-a716-446655440000",
+      fechaNotificacion: "2024-01-09T00:00:00Z",
+      leido: false,
+      mensaje: "Notification for example certification 1",
+      tipoNotificacion: "certification_reminder"
+    },
+    {
+      id: "950e8400-e29b-41d4-a716-446655440001",
+      certificacionId: "750e8400-e29b-41d4-a716-446655440001",
+      usuarioId: "650e8400-e29b-41d4-a716-446655440001",
+      fechaNotificacion: "2024-01-10T00:00:00Z",
+      leido: false,
+      mensaje: "Notification for example certification 2",
+      tipoNotificacion: "certification_update"
+    }
+  ])
+}

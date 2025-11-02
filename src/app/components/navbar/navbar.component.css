@@ -1,0 +1,12 @@
+.text-white {
+        background-color: #9dd3cf; /* Color original del botón */
+        padding: 10px;
+        border: 1px solid #9dd3cf;
+        border-radius: 10px;
+}
+
+.text-white:hover {
+        background-color: white; /* Color del botón al pasar el cursor */
+        color: #9dd3cf; /* Color del texto al pasar el cursor */
+        cursor: pointer; /* Cambia el cursor para indicar que es clickeable */
+}

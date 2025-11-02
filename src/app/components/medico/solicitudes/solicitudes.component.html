@@ -1,0 +1,153 @@
+<div class="container">
+  
+  <!-- Título principal -->
+  <div class="header">
+    <h1 class="main-title">Aprobar tarjetas</h1>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-section">
+    <div class="filters-row">
+      
+      <!-- Dropdown Trámite -->
+      <div class="filter-group">
+        <select 
+          class="filter-dropdown" 
+          [(ngModel)]="tramiteSeleccionado" 
+          (change)="onFiltroChange()">
+          <option value="" disabled>tramite</option>
+          <option *ngFor="let tramite of tiposTramite" [value]="tramite.value">
+            {{ tramite.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Dropdown Tipo -->
+      <div class="filter-group">
+        <select 
+          class="filter-dropdown" 
+          [(ngModel)]="tipoSeleccionado" 
+          (change)="onFiltroChange()">
+          <option value="" disabled>Tipo</option>
+          <option *ngFor="let tipo of tiposTarjeta" [value]="tipo.value">
+            {{ tipo.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Campo de búsqueda Correlativo -->
+      <div class="search-group">
+        <div class="search-container">
+          <input 
+            type="text" 
+            class="search-input" 
+            placeholder="Correlativo" 
+            [(ngModel)]="correlativo"
+            (input)="onFiltroChange()">
+          <button class="search-button" (click)="onFiltroChange()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Indicador de carga -->
+  <div *ngIf="cargandoSolicitudes" class="loading-section">
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <p>Cargando solicitudes...</p>
+    </div>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="errorCarga" class="error-section">
+    <div class="error-content">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 9V13M12 17H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#dc3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h3>Error al cargar solicitudes</h3>
+      <p>{{ errorCarga }}</p>
+      <button class="btn-retry" (click)="cargarSolicitudesPendientes()">Reintentar</button>
+    </div>
+  </div>
+
+  <!-- Tabla de solicitudes -->
+  <div class="table-section" *ngIf="!cargandoSolicitudes && !errorCarga && solicitudesFiltradas.length > 0">
+    <div class="table-container">
+      <table class="solicitudes-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Ciudadano</th>
+            <th>Tipo de Tarjeta</th>
+            <th>Fecha Solicitud</th>
+            <th>Estado</th>
+            <th>Examen Médico</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let solicitud of solicitudesFiltradas" class="table-row">
+            <td class="correlativo">{{ solicitud.id_solicitud }}</td>
+            <td class="ciudadano">
+              <span *ngIf="!solicitud.cargandoDatos">{{ getNombreCiudadano(solicitud) }}</span>
+              <span *ngIf="solicitud.cargandoDatos" class="loading-text">
+                <span class="mini-spinner"></span>
+                Cargando...
+              </span>
+            </td>
+            <td class="tipo">{{ getTipoTarjetaLabel(solicitud.tipo_tarjeta) }}</td>
+            <td class="fecha">{{ solicitud.fecha_solicitud | date:'dd/MM/yyyy' }}</td>
+            <td class="estado">
+              <span class="estado-badge" [class]="'estado-' + getEstadoTexto(solicitud.estado)">
+                {{ getEstadoTexto(solicitud.estado) | titlecase }}
+              </span>
+            </td>
+            <td class="examen">
+              <button 
+                *ngIf="solicitud.examen_medico" 
+                class="btn-ver-examen"
+                (click)="verExamenMedico(solicitud.examen_medico!)">
+                Ver Examen
+              </button>
+              <span *ngIf="!solicitud.examen_medico" class="no-examen">N/A</span>
+            </td>
+            <td class="acciones">
+              <div class="actions-group" *ngIf="solicitud.estado === 1">
+                <button 
+                  class="btn-aprobar"
+                  (click)="aprobarSolicitud(solicitud)">
+                  Aprobar
+                </button>
+                <button 
+                  class="btn-rechazar"
+                  (click)="rechazarSolicitud(solicitud)">
+                  Rechazar
+                </button>
+              </div>
+              <span *ngIf="solicitud.estado !== 1" class="accion-completada">
+                {{ getEstadoTexto(solicitud.estado) | titlecase }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Mensaje cuando no hay solicitudes -->
+  <div class="no-results" *ngIf="!cargandoSolicitudes && !errorCarga && solicitudesFiltradas.length === 0">
+    <div class="no-results-content">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h3>No se encontraron solicitudes</h3>
+      <p>No hay solicitudes que coincidan con los filtros aplicados.</p>
+    </div>
+  </div>
+
+</div>

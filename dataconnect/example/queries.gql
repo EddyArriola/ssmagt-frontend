@@ -1,0 +1,55 @@
+mutation CreateTipoCertificacion(
+  $nombreTipo: String!
+  $descripcion: String
+) @auth(level: USER) {
+  tipoCertificacion_insert(
+    data: { nombreTipo: $nombreTipo, descripcion: $descripcion, fechaCreacion_expr: "request.time" }
+  )
+}
+
+query GetCertificationsByUser($usuarioId: UUID!) @auth(level: USER) {
+  certificacions(where: { usuarioId: { eq: $usuarioId } }) {
+    id
+    tipoCertificacion {
+      nombreTipo
+      descripcion
+    }
+    descripcion
+    fechaEmision
+    fechaVencimiento
+    institucionEmisora
+    numeroReferencia
+    documentos_on_certificacion {
+      id
+      nombreArchivo
+      urlArchivo
+    }
+  }
+}
+
+mutation UpdateNotificacionLeido($id: UUID!, $leido: Boolean!) @auth(level: USER) {
+  notificacion_update(key: { id: $id }, data: { leido: $leido }) {
+    id
+  }
+}
+
+mutation CreateDocument(
+  $certificacionId: UUID!
+  $descripcion: String
+  $nombreArchivo: String!
+  $tipoArchivo: String!
+  $urlArchivo: String!
+) @auth(level: USER) {
+  documento_insert(
+    data: {
+      certificacionId: $certificacionId
+      descripcion: $descripcion
+      fechaSubida_expr: "request.time"
+      nombreArchivo: $nombreArchivo
+      tipoArchivo: $tipoArchivo
+      urlArchivo: $urlArchivo
+    }
+  ) {
+    id
+  }
+}

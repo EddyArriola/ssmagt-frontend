@@ -1,0 +1,381 @@
+<div class="container">
+  
+  <!-- Título principal -->
+  <div class="header">
+    <h1 class="main-title">nueva tarjeta</h1>
+    <h2 class="subtitle">elegir el tipo de tarjeta</h2>
+  </div>
+
+  <!-- Mensaje informativo sobre tarjetas vigentes -->
+  <div *ngIf="tieneTarjetasVigentes" class="alert alert-info">
+    <div class="alert-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      </svg>
+    </div>
+    <div class="alert-content">
+      <h4>Tienes tarjetas vigentes</h4>
+      <p>
+        Actualmente tienes {{ infoTarjetasVigentes?.cantidad }} tarjeta(s) vigente(s): 
+        <strong>{{ infoTarjetasVigentes?.tipos.join(', ') }}</strong>
+      </p>
+      <p *ngIf="infoTarjetasVigentes?.proximoVencimiento" class="small-text">
+        Próximo vencimiento: {{ infoTarjetasVigentes.proximoVencimiento | date:'dd/MM/yyyy' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Opciones de tarjetas -->
+  <div class="card-options">
+    
+    <!-- Tarjeta de manipulación de alimentos -->
+    <div class="card-option-wrapper">
+      <div class="card-option" 
+           [class.selected]="tipoSeleccionado === 'alimentos'" 
+           [class.disabled]="!puedesSolicitarTipo('alimentos')"
+           (click)="seleccionarTipoTarjeta('alimentos')">
+        <div class="card-icon">
+          <svg viewBox="0 0 64 64" class="icon">
+            <!-- Icono de manipulación de alimentos -->
+            <circle cx="32" cy="32" r="30" fill="#e8e5da" stroke="#7db4a6" stroke-width="2"/>
+            <path d="m20 28 h24 v8 h-24 z" fill="#7db4a6"/>
+            <circle cx="26" cy="32" r="2" fill="white"/>
+            <circle cx="32" cy="32" r="2" fill="white"/>
+            <circle cx="38" cy="32" r="2" fill="white"/>
+            <path d="m24 20 h16 l-2 6 h-12 z" fill="#7db4a6"/>
+            <path d="m26 42 h12 v2 h-12 z" fill="#7db4a6"/>
+          </svg>
+        </div>
+        <h3 class="card-title">manipulación<br>de alimentos</h3>
+      </div>
+      
+      <!-- Overlay de tarjeta no disponible -->
+      <div *ngIf="!puedesSolicitarTipo('alimentos')" class="disabled-overlay">
+        <div class="disabled-content">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+          <span [innerHTML]="getMensajeOverlayAlimentos()"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta de salud -->
+    <div class="card-option-wrapper">
+      <div class="card-option" 
+           [class.selected]="tipoSeleccionado === 'salud'" 
+           [class.disabled]="!puedesSolicitarTipo('salud')"
+           (click)="seleccionarTipoTarjeta('salud')">
+        <div class="card-icon">
+          <svg viewBox="0 0 64 64" class="icon">
+            <!-- Icono de salud (cruz médica) -->
+            <circle cx="32" cy="32" r="30" fill="#e8e5da" stroke="#7db4a6" stroke-width="2"/>
+            <path d="m28 16 h8 v32 h-8 z" fill="#7db4a6"/>
+            <path d="m16 28 h32 v8 h-32 z" fill="#7db4a6"/>
+          </svg>
+        </div>
+        <h3 class="card-title">salud</h3>
+      </div>
+      
+      <!-- Overlay de tarjeta vigente -->
+      <div *ngIf="!puedesSolicitarTipo('salud')" class="disabled-overlay">
+        <div class="disabled-content">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+          <span>Ya tienes una<br>tarjeta vigente</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Sección de selección de archivo (se muestra cuando se selecciona tarjeta de salud) -->
+  <div *ngIf="mostrarSeccionArchivo" class="file-section">
+    
+    <!-- Área de selección/visualización de archivo -->
+    <div class="file-upload-container">
+      <div class="file-upload-area" 
+           [class.has-file]="archivoSeleccionado" 
+           [class.uploaded]="archivoSubido"
+           [class.error]="errorSubida"
+           (click)="!archivoSubido ? fileInput.click() : null">
+        
+        <!-- Estado normal: seleccionar archivo -->
+        <div *ngIf="!archivoSeleccionado && !archivoSubido" class="upload-state">
+          <div class="file-icon">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2z" fill="#7db4a6"/>
+            </svg>
+          </div>
+          <p class="file-text">selecciona un archivo</p>
+          <p class="file-hint">PDF, DOC, DOCX, JPG, PNG (máx. 10MB)</p>
+        </div>
+
+        <!-- Estado: archivo seleccionado pero no subido -->
+        <div *ngIf="archivoSeleccionado && !archivoSubido && !subiendoArchivo" class="upload-state">
+          <div class="file-icon">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" fill="#7db4a6"/>
+            </svg>
+          </div>
+          <p class="file-text">{{ archivoSeleccionado.name }}</p>
+          <p class="file-size">{{ getFormattedFileSize() }}</p>
+          <button class="upload-btn" (click)="subirArchivo(); $event.stopPropagation()">
+            Subir archivo
+          </button>
+        </div>
+
+        <!-- Estado: subiendo archivo -->
+        <div *ngIf="subiendoArchivo" class="upload-state loading">
+          <div class="file-icon">
+            <div class="spinner"></div>
+          </div>
+          <p class="file-text">Subiendo archivo...</p>
+          <p class="file-size">{{ getFormattedFileSize() }}</p>
+        </div>
+
+        <!-- Estado: archivo subido exitosamente -->
+        <div *ngIf="archivoSubido" class="upload-state success">
+          <div class="file-icon">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" fill="#28a745"/>
+            </svg>
+          </div>
+          <p class="file-text">{{ archivoSubido.fileName }}</p>
+          <p class="file-size">{{ getFormattedUploadedFileSize() }} - Subido exitosamente</p>
+          <button class="delete-btn" (click)="eliminarArchivo(); $event.stopPropagation()">
+            Cambiar archivo
+          </button>
+        </div>
+
+      </div>
+      
+      <input #fileInput 
+             type="file" 
+             class="file-input" 
+             (change)="onFileSelected($event)" 
+             accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+    </div>
+
+    <!-- Mostrar errores -->
+    <div *ngIf="errorSubida" class="error-message">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12,2L13.09,8.26L22,9L13.09,9.74L12,16L10.91,9.74L2,9L10.91,8.26L12,2Z" fill="#dc3545"/>
+      </svg>
+      {{ errorSubida }}
+    </div>
+    
+  </div>
+
+  <!-- Sección específica para manipulación de alimentos -->
+  <div *ngIf="mostrarSeccionAlimentos" class="alimentos-section">
+    <div class="section-header">
+      <h3 class="section-title">manipulación de alimentos</h3>
+      <p class="section-subtitle">elige cómo deseas proceder con tu solicitud</p>
+    </div>
+
+    <div class="alimentos-options">
+      <button class="alimentos-btn consultar" (click)="consultarGuia()">
+        <div class="btn-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <span>consultar guía</span>
+      </button>
+
+      <button class="alimentos-btn iniciar" (click)="iniciarExamen()">
+        <div class="btn-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <span>iniciar examen</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Sección del examen de manipulación de alimentos -->
+  <div *ngIf="mostrarExamen" class="examen-section">
+    <div class="section-header">
+      <h3 class="section-title">Examen de Manipulación de Alimentos</h3>
+      <p class="section-subtitle">Responde todas las preguntas para continuar con tu solicitud</p>
+    </div>
+
+    <!-- Resultado del examen (si está completado) -->
+    <div *ngIf="examenCompletado" class="examen-resultado">
+      <div class="resultado-card" [class.aprobado]="puntajeExamen >= 70" [class.reprobado]="puntajeExamen < 70">
+        <div class="resultado-icon">
+          <svg *ngIf="puntajeExamen >= 70" width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" fill="#28a745"/>
+          </svg>
+          <svg *ngIf="puntajeExamen < 70" width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" fill="#dc3545"/>
+          </svg>
+        </div>
+        <h4 class="resultado-titulo">{{ puntajeExamen >= 70 ? '¡Examen Aprobado!' : 'Examen No Aprobado' }}</h4>
+        <p class="resultado-puntaje">Puntaje: {{ puntajeExamen }}%</p>
+        <p class="resultado-mensaje">
+          {{ puntajeExamen >= 70 ? 'Continúas al siguiente paso...' : 'Debes estudiar más y volver a intentarlo.' }}
+        </p>
+        
+        <!-- Estado de generación del PDF -->
+        <div *ngIf="puntajeExamen >= 70" class="pdf-status">
+          <div *ngIf="generandoPDF" class="pdf-generating">
+            <div class="spinner-small"></div>
+            <span>Generando documento PDF...</span>
+          </div>
+          <div *ngIf="pdfGenerado && !generandoPDF" class="pdf-generated">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" fill="#28a745"/>
+            </svg>
+            <span>Documento PDF generado exitosamente</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario del examen -->
+    <div *ngIf="!examenCompletado" class="examen-formulario">
+      <div class="preguntas-container">
+        <div *ngFor="let pregunta of preguntasExamen" class="pregunta-item">
+          <div class="pregunta-numero">{{ pregunta.id }}</div>
+          <div class="pregunta-contenido">
+            <label class="pregunta-texto">{{ pregunta.pregunta }}</label>
+            <textarea 
+              class="respuesta-textarea"
+              [placeholder]="'Escribe tu respuesta aquí...'"
+              [value]="respuestasExamen[pregunta.id] || ''"
+              (input)="actualizarRespuesta(pregunta.id, $any($event.target).value)"
+              rows="3">
+            </textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de acción del examen -->
+      <div class="examen-actions">
+        <button class="btn-secondary" (click)="volverDelExamen()">
+          Volver
+        </button>
+        <button 
+          class="btn-enviar-examen" 
+          (click)="enviarExamen()"
+          [disabled]="!todasLasPreguntasRespondidas() || generandoPDF">
+          <span *ngIf="!generandoPDF">Enviar Examen</span>
+          <span *ngIf="generandoPDF">
+            <div class="spinner-small" style="display: inline-block; margin-right: 8px;"></div>
+            Procesando...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección de selección de centro de salud -->
+  <div *ngIf="mostrarSeleccionCentro" class="centro-salud-section">
+    <div class="section-header">
+      <h3 class="section-title">seleccionar centro de salud</h3>
+      <p class="section-subtitle">elige el centro de salud donde realizarás tu trámite</p>
+    </div>
+
+    <!-- Lista de centros de salud -->
+    <div class="centros-grid">
+      <div *ngFor="let centro of centrosDeSalud" 
+           class="centro-option" 
+           [class.selected]="centroSeleccionado === centro.id"
+           (click)="centroSeleccionado = centro.id">
+        <div class="centro-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V15H11V17M11,13H13V7H11V13Z" fill="#7db4a6"/>
+          </svg>
+        </div>
+        <p class="centro-name">{{ centro.nombre }}</p>
+        <div class="centro-check" *ngIf="centroSeleccionado === centro.id">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" fill="#28a745"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mostrar errores de solicitud -->
+    <div *ngIf="errorSolicitud" class="error-message">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12,2L13.09,8.26L22,9L13.09,9.74L12,16L10.91,9.74L2,9L10.91,8.26L12,2Z" fill="#dc3545"/>
+      </svg>
+      {{ errorSolicitud }}
+    </div>
+
+    <!-- Mensaje de éxito -->
+    <div *ngIf="solicitudExitosa" class="success-message">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" fill="#28a745"/>
+      </svg>
+      <div>
+        <p class="success-title">¡Solicitud enviada exitosamente!</p>
+        <p class="success-text">Tu solicitud ha sido procesada. Serás redirigido al dashboard...</p>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="action-section">
+      <button class="btn-secondary" (click)="volverPasoAnterior()" [disabled]="enviandoSolicitud">
+        volver
+      </button>
+      <button class="iniciar-tramite-btn" 
+              (click)="procesarSolicitud()" 
+              [disabled]="!centroSeleccionado || enviandoSolicitud">
+        <span *ngIf="!enviandoSolicitud">enviar solicitud</span>
+        <span *ngIf="enviandoSolicitud">enviando...</span>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal de guía de manipulación de alimentos -->
+<div *ngIf="mostrarModalGuia" class="modal-overlay-guia" (click)="onModalGuiaBackdropClick($event)">
+  <div class="modal-content-guia" (click)="$event.stopPropagation()">
+    <!-- Header del modal -->
+    <div class="modal-header-guia">
+      <h3 class="modal-title-guia">Guía de Manipulación de Alimentos</h3>
+      <button class="modal-close-btn-guia" (click)="cerrarModalGuia()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Contenido del modal con iframe -->
+    <div class="modal-body-guia">
+      <div class="iframe-container">
+        <iframe 
+          src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fpermalink.php%3Fstory_fbid%3Dpfbid02tHSmskSq9PZrvNhMfHGXgzhwqS4WG6vXM4uXFqnNJaLcvaSVMkmj96dFtjCQXYdtl%26id%3D100063686641447&show_text=true&width=500" 
+          width="500" 
+          height="632" 
+          style="border:none;overflow:hidden" 
+          scrolling="no" 
+          frameborder="0" 
+          allowfullscreen="true" 
+          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+        </iframe>
+      </div>
+    </div>
+    
+    <!-- Footer del modal -->
+    <div class="modal-footer-guia">
+      <button class="btn-cerrar-guia" (click)="cerrarModalGuia()">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
