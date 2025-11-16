@@ -3,7 +3,7 @@ import * as QRCode from 'qrcode';
 
 export interface QRCodeData {
   id_tarjeta: number;
-  id_solicitud: number;
+  id_solicitud?: number;
   cui_ciudadano?: string;
   tipo_tarjeta: number;
   fecha_emision: string;
@@ -40,7 +40,7 @@ export class QrCodeService {
       // Crear el objeto de datos que irá en el QR
       const qrData = {
         id_tarjeta: tarjetaData.id_tarjeta,
-        id_solicitud: tarjetaData.id_solicitud,
+        id_solicitud: tarjetaData.id_solicitud || 0,
         cui_ciudadano: tarjetaData.cui_ciudadano,
         tipo_tarjeta: tarjetaData.tipo_tarjeta,
         fecha_emision: tarjetaData.fecha_emision,
@@ -196,7 +196,7 @@ export class QrCodeService {
     try {
       const qrData = {
         id_tarjeta: tarjetaData.id_tarjeta,
-        id_solicitud: tarjetaData.id_solicitud,
+        id_solicitud: tarjetaData.id_solicitud || 0,
         cui_ciudadano: tarjetaData.cui_ciudadano,
         tipo_tarjeta: tarjetaData.tipo_tarjeta,
         fecha_emision: tarjetaData.fecha_emision,

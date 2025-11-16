@@ -45,7 +45,11 @@ export class LoginComponent {
 
           // Determinar rol (normalizado a string(s)) y navegar según mapa
           const role = this.auth.getNormalizedRole();
-          const target = this.mapRoleToRoute(role);
+          console.log('🔍 Rol normalizado obtenido:', role);
+          const roleName = this.getRoleNameFromNumber(role);
+          console.log('🏷️ Nombre del rol:', roleName);
+          const target = this.mapRoleToRoute(roleName);
+          console.log('🎯 Ruta objetivo determinada:', target);
           this.router.navigate([target]);
         } else {
           this.error = 'Respuesta inesperada del servidor';
@@ -71,10 +75,25 @@ export class LoginComponent {
   }
 
   /**
+   * Convierte número de rol a nombre de rol
+   */
+  private getRoleNameFromNumber(roleNumber: number): string {
+    switch (roleNumber) {
+      case 1: return 'ciudadano';
+      case 2: return 'medico';
+      case 3: return 'administrador';
+      case 4: return 'consultor';
+      default: return 'ciudadano'; // Default fallback
+    }
+  }
+
+  /**
    * Mapea rol(es) (incluyendo los nombres en español que devuelve `roleName`) a una ruta de la aplicación.
    * Acepta también variantes en inglés como compatibilidad.
    */
   private mapRoleToRoute(role: string | string[] | null): string {
+    console.log('🗺️ Mapeando rol a ruta:', role);
+    
     // prioridad: administrador > medico > ciudadano > consultor
     const priorityVariants = [
       ['administrador', 'admin'],
@@ -83,43 +102,56 @@ export class LoginComponent {
       ['consultor', 'consultant']
     ];
 
-    if (!role) return '/';
+    if (!role) {
+      console.log('⚠️ Rol vacío, redirigiendo a home');
+      return '/';
+    }
 
     const roleList = Array.isArray(role) ? role.map(r => String(r).toLowerCase()) : [String(role).toLowerCase()];
+    console.log('📋 Lista de roles procesada:', roleList);
 
     // Buscar por prioridad
     for (const variants of priorityVariants) {
       for (const v of variants) {
-        if (roleList.includes(v)) return this.routeFor(variants[0]);
+        if (roleList.includes(v)) {
+          const route = this.routeFor(variants[0]);
+          console.log(`✅ Rol '${v}' encontrado, redirigiendo a:`, route);
+          return route;
+        }
       }
     }
 
     // Si ninguno coincide, intentar usar el primer elemento del array si existe
-    if (roleList.length) return this.routeFor(roleList[0]);
+    if (roleList.length) {
+      const route = this.routeFor(roleList[0]);
+      console.log(`🔄 Usando primer rol '${roleList[0]}', redirigiendo a:`, route);
+      return route;
+    }
 
+    console.log('❌ No se pudo determinar ruta, redirigiendo a home');
     return '/';
   }
 
   private routeFor(p: string | undefined): string {
     switch ((p || '').toLowerCase()) {
       case 'administrador':
-        return '/admin';
+        return '/inicio-admin';
       case 'medico':
         return '/inicio-medico';
       case 'ciudadano':
         return '/inicioCiudadano';
       case 'consultor':
-        return '/consultor';
+        return '/inicio-consultor';
       // English fallbacks
       case 'admin':
-        return '/admin';
+        return '/inicio-admin';
       case 'manager':
       case 'medic':
         return '/inicio-medico';
       case 'user':
         return '/inicioCiudadano';
       case 'consultant':
-        return '/consultor';
+        return '/inicio-consultor';
       default:
         return '/';
     }

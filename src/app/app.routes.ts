@@ -8,6 +8,11 @@ import { ActualizarDatosComponent } from './components/ciudadano/actualizar-dato
 import { InicioMedicoComponent } from './components/medico/inicio-medico/inicio-medico.component';
 import { SolicitudesComponent } from './components/medico/solicitudes/solicitudes.component';
 import { CreateUserComponent } from './create-user/create-user.component';
+import { InicioAdminComponent } from './components/admin/inicio-admin/inicio-admin.component';
+import { ListadoUsuariosComponent } from './components/admin/listado-usuarios/listado-usuarios.component';
+import { ListadoInstitutoComponent } from './components/admin/listado-instituto/listado-instituto.component';
+import { InicioConsultorComponent } from './components/consultor/inicio-consultor/inicio-consultor.component';
+import { ListadoTarjetasComponent } from './components/consultor/listado-tarjetas/listado-tarjetas.component';
 
 export const routes: Routes = [
 	{ path: 'login', component: LoginComponent },
@@ -17,8 +22,12 @@ export const routes: Routes = [
 	{ path: 'tarjetas-aprobadas-centro', component: TarjetasAprovadasComponent },
 	{ path: 'nueva-solicitud', component: SolicitudTarjetasComponent },
 	{ path: 'actualizar-datos', component: ActualizarDatosComponent },
-
 	{ path: 'Solicitudes-pendientes', component: SolicitudesComponent },
 	{ path: 'register', component: CreateUserComponent },
+	{ path: 'inicio-admin', component: InicioAdminComponent },
+	{ path: 'admin/usuarios', component: ListadoUsuariosComponent },
+	{ path: 'admin/instituto', component: ListadoInstitutoComponent },
+	{ path: 'inicio-consultor', component: InicioConsultorComponent },
+	{ path: 'consultor/tarjetas', component: ListadoTarjetasComponent },
 	{ path: '', redirectTo: 'login', pathMatch: 'full' }
 ];

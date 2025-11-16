@@ -1,0 +1,238 @@
+<div class="usuarios-container">
+  <div class="header">
+    <h1 class="title">👥 Gestión de Usuarios</h1>
+    <p class="subtitle">Administra y visualiza todos los usuarios del sistema</p>
+  </div>
+
+  <!-- Filtros y controles -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <!-- Filtro por nombre/CUI -->
+      <div class="filter-group">
+        <label for="filtroNombre" class="filter-label">Buscar por nombre o CUI:</label>
+        <input 
+          id="filtroNombre"
+          type="text" 
+          [(ngModel)]="filtroNombre" 
+          placeholder="Escribe nombre, apellido o CUI..."
+          class="filter-input">
+      </div>
+
+      <!-- Filtro por rol -->
+      <div class="filter-group">
+        <label for="filtroRol" class="filter-label">Filtrar por rol:</label>
+        <select id="filtroRol" [(ngModel)]="filtroRol" (ngModelChange)="onFiltroRolChange($event)" class="filter-select">
+          <option [ngValue]="null">Todos los roles</option>
+          <option [ngValue]="1">Ciudadano</option>
+          <option [ngValue]="2">Médico</option>
+          <option [ngValue]="3">Administrador</option>
+          <option [ngValue]="4">Consultor</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Botones de control -->
+    <div class="controls">
+      <button (click)="limpiarFiltros()" class="btn-secondary">🗑️ Limpiar filtros</button>
+      <button (click)="recargar()" class="btn-primary" [disabled]="loading">
+        <span *ngIf="loading">🔄 Cargando...</span>
+        <span *ngIf="!loading">🔄 Recargar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Estadísticas -->
+  <div class="stats" *ngIf="!loading && !error">
+    <div class="stat-card">
+      <span class="stat-number">{{ usuarios.length }}</span>
+      <span class="stat-label">Total de usuarios</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ usuariosFiltrados.length }}</span>
+      <span class="stat-label">Usuarios mostrados</span>
+    </div>
+  </div>
+
+  <!-- Estados de carga y error -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando usuarios...</p>
+  </div>
+
+  <div *ngIf="error" class="error-state">
+    <div class="error-icon">⚠️</div>
+    <h3>Error al cargar usuarios</h3>
+    <p>{{ error }}</p>
+    <button (click)="recargar()" class="btn-primary">Intentar de nuevo</button>
+  </div>
+
+  <!-- Lista de usuarios -->
+  <div *ngIf="!loading && !error" class="usuarios-grid">
+    <div *ngIf="usuariosFiltrados.length === 0" class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>No se encontraron usuarios</h3>
+      <p>No hay usuarios que coincidan con los filtros seleccionados.</p>
+    </div>
+
+    <!-- Tarjetas de usuarios -->
+    <div *ngFor="let usuario of usuariosFiltrados" class="usuario-card">
+      <div class="usuario-header">
+        <div class="usuario-avatar">
+          {{ usuario.nombres.charAt(0).toUpperCase() }}{{ usuario.apellidos.charAt(0).toUpperCase() }}
+        </div>
+        <div class="usuario-info">
+          <h3 class="usuario-nombre">{{ usuario.nombres }} {{ usuario.apellidos }}</h3>
+          <p class="usuario-cui">CUI: {{ usuario.cui }}</p>
+        </div>
+        <div class="usuario-badges">
+          <span class="badge" [ngClass]="'badge-rol-' + usuario.id_rol">
+            {{ obtenerNombreRol(usuario.id_rol) }}
+          </span>
+          <span class="badge" [ngClass]="usuario.estado === 1 ? 'badge-activo' : 'badge-inactivo'">
+            {{ obtenerEstado(usuario.estado) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="usuario-details">
+        <div class="detail-row" *ngIf="usuario.email">
+          <span class="detail-label">📧 Email:</span>
+          <span class="detail-value">{{ usuario.email }}</span>
+        </div>
+        
+        <div class="detail-row" *ngIf="usuario.telefono">
+          <span class="detail-label">📞 Teléfono:</span>
+          <span class="detail-value">{{ usuario.telefono }}</span>
+        </div>
+        
+        <div class="detail-row" *ngIf="usuario.ocupacion">
+          <span class="detail-label">💼 Ocupación:</span>
+          <span class="detail-value">{{ usuario.ocupacion }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">🎂 Nacimiento:</span>
+          <span class="detail-value">{{ formatearFecha(usuario.fecha_nacimiento) }}</span>
+        </div>
+
+        <div class="detail-row" *ngIf="usuario.instituto">
+          <span class="detail-label">🏥 Instituto:</span>
+          <span class="detail-value">{{ obtenerNombreInstituto(usuario.instituto) }}</span>
+        </div>
+
+        <div class="detail-row" *ngIf="usuario.direccion">
+          <span class="detail-label">📍 Dirección:</span>
+          <span class="detail-value">{{ usuario.direccion }}</span>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="usuario-actions">
+        <button (click)="editarUsuario(usuario)" class="btn-action btn-edit" title="Editar usuario">
+          ✏️ Editar
+        </button>
+        <button 
+          (click)="eliminarUsuario(usuario)" 
+          class="btn-action btn-delete" 
+          [disabled]="estaEliminando(usuario.id_usuario)"
+          title="Eliminar usuario">
+          <span *ngIf="!estaEliminando(usuario.id_usuario)">🗑️ Eliminar</span>
+          <span *ngIf="estaEliminando(usuario.id_usuario)">🔄 Eliminando...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Edición de Usuario -->
+<div *ngIf="mostrarModalEdicion" class="modal-overlay" (click)="cerrarModalEdicion()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>✏️ Editar Usuario</h2>
+      <button (click)="cerrarModalEdicion()" class="modal-close">✕</button>
+    </div> 
+
+    <div class="modal-body">
+      <!-- Información del Usuario -->
+      <div *ngIf="usuarioEditando" class="usuario-info-modal">
+        <div class="info-row">
+          <span class="info-label">👤 Nombre completo:</span>
+          <span class="info-value">{{ usuarioEditando.nombres }} {{ usuarioEditando.apellidos }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">🆔 CUI:</span>
+          <span class="info-value">{{ usuarioEditando.cui }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">📧 Email:</span>
+          <span class="info-value">{{ usuarioEditando.email || 'No especificado' }}</span>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Campos editables</h3>
+
+        <!-- Selector de Rol -->
+        <div class="form-group">
+          <label for="nuevoRol">🎭 Rol del Usuario:</label>
+          <select id="nuevoRol" [(ngModel)]="nuevoRol" class="form-select">
+            <option [ngValue]="null">Seleccionar rol...</option>
+            <option [ngValue]="1">Ciudadano</option>
+            <option [ngValue]="2">Médico</option>
+            <option [ngValue]="3">Administrador</option>
+            <option [ngValue]="4">Consultor</option>
+          </select>
+          
+          <!-- Indicador de cambio para rol -->
+          <div *ngIf="nuevoRol !== null && nuevoRol !== usuarioEditando?.id_rol" class="change-indicator">
+            <span class="change-label">📝 Cambio:</span>
+            <span class="change-from">{{ obtenerNombreRol(usuarioEditando?.id_rol) }}</span>
+            <span class="change-arrow">→</span>
+            <span class="change-to">{{ obtenerNombreRol(nuevoRol) }}</span>
+          </div>
+        </div>
+
+        <!-- Selector de Centro de Salud -->
+        <div class="form-group">
+          <label for="nuevoInstituto">🏥 Centro de Salud:</label>
+          <select id="nuevoInstituto" [(ngModel)]="nuevoInstituto" class="form-select">
+            <option [ngValue]="null">Sin centro asignado</option>
+            <option *ngFor="let instituto of institutos" [ngValue]="instituto.id_centro">
+              {{ instituto.nombre }}
+            </option>
+          </select>
+          
+          <!-- Indicador de cambio para instituto -->
+          <div *ngIf="nuevoInstituto !== usuarioEditando?.instituto" class="change-indicator">
+            <span class="change-label">📝 Cambio:</span>
+            <span class="change-from">{{ obtenerNombreInstituto(usuarioEditando?.instituto) }}</span>
+            <span class="change-arrow">→</span>
+            <span class="change-to">{{ obtenerNombreInstituto(nuevoInstituto) }}</span>
+          </div>
+        </div>
+
+        <!-- Mensaje de error -->
+        <div *ngIf="errorEdicion" class="error-message">
+          ❌ {{ errorEdicion }}
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button 
+        (click)="cerrarModalEdicion()" 
+        class="btn-secondary" 
+        [disabled]="loadingEdicion">
+        🚫 Cancelar
+      </button>
+      <button 
+        (click)="guardarCambiosUsuario()" 
+        class="btn-primary" 
+        [disabled]="loadingEdicion || !hayCambios">
+        <span *ngIf="!loadingEdicion && hayCambios">💾 Guardar Cambios</span>
+        <span *ngIf="!loadingEdicion && !hayCambios">📝 Sin cambios</span>
+        <span *ngIf="loadingEdicion">🔄 Guardando...</span>
+      </button>
+    </div>
+  </div>
+</div>

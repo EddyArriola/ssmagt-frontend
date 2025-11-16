@@ -14,7 +14,8 @@ export interface CreateUsuarioDto {
 
 // Interfaz para usuario existente (respuesta del servidor)
 export interface Usuario {
-  id_usuario: number;
+  id_usuario?: number;
+  id_rol?: number;
   nombres: string;
   apellidos: string;
   cui: string;
@@ -23,6 +24,8 @@ export interface Usuario {
   telefono?: string;
   email?: string;
   ocupacion?: string;
+  password: string;
+  instituto?: number;
   fecha_creacion?: Date;
   estado?: number; // 1 = activo, 0 = inactivo
   rol?: any; // Objeto de relación con la tabla rol

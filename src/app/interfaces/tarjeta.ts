@@ -28,7 +28,7 @@ export interface SolicitudTarjeta {
 // Interfaz para tarjeta aprobada
 export interface Tarjeta {
   id_tarjeta: number;
-  id_solicitud: number;
+  id_solicitud?: number;
   fecha_emision: string;
   fecha_vencimiento: string;
   estado: number;
@@ -50,7 +50,6 @@ export enum EstadoTarjeta {
 }
 
 export enum TipoTarjeta {
-  REGULAR = 1,
-  ESPECIAL = 2,
-  TEMPORAL = 3
+  SALUD = 1,
+  MANIPULACION = 2
 }

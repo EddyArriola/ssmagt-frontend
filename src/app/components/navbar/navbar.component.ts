@@ -18,30 +18,26 @@ export class NavbarComponent {
   }
 
   isConsultor(): boolean {
-    const r = this.auth.getNormalizedRole();
-    if (!r) return false;
-    if (Array.isArray(r)) return r.includes('consultor');
-    return String(r).toLowerCase() === 'consultor';
+    const role = this.auth.getNormalizedRole();
+    console.log('🔍 Navbar - isConsultor() - Role:', role);
+    return role === 4; // Rol 4 = Consultor
   }
 
   isCiudadano(): boolean {
-    const r = this.auth.getNormalizedRole();
-    if (!r) return false;
-    if (Array.isArray(r)) return r.includes('ciudadano');
-    return String(r).toLowerCase() === 'ciudadano';
+    const role = this.auth.getNormalizedRole();
+    console.log('🔍 Navbar - isCiudadano() - Role:', role);
+    return role === 1; // Rol 1 = Ciudadano
   }
 
   isMedico(): boolean {
-    const r = this.auth.getNormalizedRole();
-    if (!r) return false;
-    if (Array.isArray(r)) return r.includes('medico');
-    return String(r).toLowerCase() === 'medico';
+    const role = this.auth.getNormalizedRole();
+    console.log('🔍 Navbar - isMedico() - Role:', role);
+    return role === 2; // Rol 2 = Médico
   }
 
   isAdministrador(): boolean {
-    const r = this.auth.getNormalizedRole();
-    if (!r) return false;
-    if (Array.isArray(r)) return r.includes('administrador');
-    return String(r).toLowerCase() === 'administrador';
+    const role = this.auth.getNormalizedRole();
+    console.log('🔍 Navbar - isAdministrador() - Role:', role);
+    return role === 3; // Rol 3 = Administrador
   }
 }

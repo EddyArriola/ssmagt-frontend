@@ -5,3 +5,35 @@
 
 /* Estilos globales adicionales para el login */
 body{ font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial }
+
+/* Animaciones para notificaciones de expiración de tokens */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Estilos para notificaciones de token */
+.token-expiration-notification {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.token-expiration-notification.removing {
+  animation: slideOutRight 0.3s ease-in;
+}

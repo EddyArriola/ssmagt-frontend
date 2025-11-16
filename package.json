@@ -5,8 +5,12 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --configuration production",
+    "build:azure": "ng build --configuration production --base-href '/'",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "docker:build": "docker build -f Dockerfile.prod -t ssmagt-frontend-prod .",
+    "docker:run": "docker run -d -p 8080:80 --name ssmagt-frontend-container ssmagt-frontend-prod"
   },
   "private": true,
   "dependencies": {
@@ -23,6 +27,7 @@
     "@tanstack/angular-query-experimental": "5.66.4",
     "@types/qrcode": "^1.5.6",
     "flowbite": "^3.1.2",
+    "html2canvas": "^1.4.1",
     "jspdf": "^3.0.3",
     "postcss": "^8.5.6",
     "qrcode": "^1.5.4",

@@ -1,0 +1,186 @@
+<div class="tarjetas-container">
+  <div class="header">
+    <h1 class="title">💳 Gestión de Tarjetas</h1>
+    <p class="subtitle">Visualiza y administra todas las tarjetas del sistema</p>
+  </div>
+
+  <!-- Filtros y controles -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <!-- Filtro por nombre -->
+      <div class="filter-group">
+        <label for="filtroNombre" class="filter-label">Buscar por nombre:</label>
+        <input 
+          id="filtroNombre"
+          type="text" 
+          [(ngModel)]="filtroNombre" 
+          placeholder="Escribe nombre o apellido..."
+          class="filter-input">
+      </div>
+
+      <!-- Filtro por CUI -->
+      <div class="filter-group">
+        <label for="filtroCUI" class="filter-label">Buscar por CUI:</label>
+        <input 
+          id="filtroCUI"
+          type="text" 
+          [(ngModel)]="filtroCUI" 
+          placeholder="Escribe el CUI..."
+          class="filter-input">
+      </div>
+
+      <!-- Filtro por estado -->
+      <div class="filter-group">
+        <label for="filtroEstado" class="filter-label">Filtrar por estado:</label>
+        <select id="filtroEstado" [(ngModel)]="filtroEstado" class="filter-select">
+          <option [ngValue]="null">Todos los estados</option>
+          <option [ngValue]="1">Pendiente</option>
+          <option [ngValue]="2">Aprobada</option>
+          <option [ngValue]="3">Vencida</option>
+          <option [ngValue]="4">Cancelada</option>
+        </select>
+      </div>
+
+      <!-- Filtro por tipo -->
+      <div class="filter-group">
+        <label for="filtroTipo" class="filter-label">Filtrar por tipo:</label>
+        <select id="filtroTipo" [(ngModel)]="filtroTipo" class="filter-select">
+          <option [ngValue]="null">Todos los tipos</option>
+          <option [ngValue]="1">Salud</option>
+          <option [ngValue]="2">Manipulación</option>
+        </select>
+      </div>
+
+      <!-- Filtro por centro de salud -->
+      <div class="filter-group">
+        <label for="filtroCentro" class="filter-label">Filtrar por centro de salud:</label>
+        <select id="filtroCentro" [(ngModel)]="filtroCentro" class="filter-select">
+          <option [ngValue]="null">Todos los centros</option>
+          <option *ngFor="let centro of centrosSalud" [ngValue]="centro.id_centro">
+            {{ centro.nombre }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Botones de control -->
+    <div class="controls">
+      <button (click)="limpiarFiltros()" class="btn-secondary">🗑️ Limpiar filtros</button>
+      <button (click)="recargar()" class="btn-primary" [disabled]="loading">
+        <span *ngIf="loading">🔄 Cargando...</span>
+        <span *ngIf="!loading">🔄 Recargar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Estadísticas -->
+  <div class="stats" *ngIf="!loading && !error">
+    <div class="stat-card">
+      <span class="stat-number">{{ tarjetas.length }}</span>
+      <span class="stat-label">Total de tarjetas</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ tarjetasFiltradas.length }}</span>
+      <span class="stat-label">Tarjetas mostradas</span>
+    </div>
+  </div>
+
+  <!-- Estados de carga y error -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando tarjetas...</p>
+  </div>
+
+  <div *ngIf="error" class="error-state">
+    <div class="error-icon">⚠️</div>
+    <h3>Error al cargar tarjetas</h3>
+    <p>{{ error }}</p>
+    <button (click)="recargar()" class="btn-primary">Intentar de nuevo</button>
+  </div>
+
+  <!-- Lista de tarjetas -->
+  <div *ngIf="!loading && !error" class="tarjetas-grid">
+    <div *ngIf="tarjetasFiltradas.length === 0" class="empty-state">
+      <div class="empty-icon">💳</div>
+      <h3>No se encontraron tarjetas</h3>
+      <p>No hay tarjetas que coincidan con los filtros seleccionados.</p>
+    </div>
+
+    <!-- Tarjetas de usuarios -->
+    <div *ngFor="let tarjeta of tarjetasFiltradas" class="tarjeta-card">
+      <div class="tarjeta-header">
+        <div class="tarjeta-avatar">
+          {{ ((tarjeta.solicitud_tarjeta.usuario?.nombres || 'U').charAt(0) + (tarjeta.solicitud_tarjeta.usuario?.apellidos || 'S').charAt(0)).toUpperCase() }}
+        </div>
+        <div class="tarjeta-info">
+          <h3 class="tarjeta-nombre">{{ tarjeta.solicitud_tarjeta.usuario?.nombres }} {{ tarjeta.solicitud_tarjeta.usuario?.apellidos }}</h3>
+          <p class="tarjeta-cui">CUI: {{ tarjeta.solicitud_tarjeta.usuario?.cui }}</p>
+        </div>
+        <div class="tarjeta-badges">
+          <span class="badge" [ngClass]="'badge-estado-' + tarjeta.estado">
+            {{ obtenerNombreEstado(tarjeta.estado) }}
+          </span>
+          <span class="badge badge-tipo">
+            {{ obtenerNombreTipo(tarjeta.solicitud_tarjeta.tipo_tarjeta) }}
+          </span>
+          <span *ngIf="estaVencida(tarjeta)" class="badge badge-vencida">⚠️ Vencida</span>
+          <span *ngIf="vencePronto(tarjeta) && !estaVencida(tarjeta)" class="badge badge-por-vencer">⏰ Por vencer</span>
+        </div>
+      </div>
+
+      <div class="tarjeta-details">
+        <div class="detail-row">
+          <span class="detail-label">💳 ID Tarjeta:</span>
+          <span class="detail-value">{{ tarjeta.id_tarjeta }}</span>
+        </div>
+        
+        <div class="detail-row" *ngIf="tarjeta.solicitud_tarjeta.usuario?.email">
+          <span class="detail-label">📧 Email:</span>
+          <span class="detail-value">{{ tarjeta.solicitud_tarjeta.usuario?.email }}</span>
+        </div>
+        
+        <div class="detail-row" *ngIf="tarjeta.solicitud_tarjeta.usuario?.telefono">
+          <span class="detail-label">📞 Teléfono:</span>
+          <span class="detail-value">{{ tarjeta.solicitud_tarjeta.usuario?.telefono }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">📅 Fecha de emisión:</span>
+          <span class="detail-value">{{ formatearFecha(tarjeta.fecha_emision) }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">⏰ Fecha de vencimiento:</span>
+          <span class="detail-value">{{ formatearFecha(tarjeta.fecha_vencimiento) }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">🏥 Centro de salud:</span>
+          <span class="detail-value">ID: {{ tarjeta.solicitud_tarjeta.id_centro_de_salud }}</span>
+        </div>
+
+        <div class="detail-row" *ngIf="tarjeta.solicitud_tarjeta.observaciones">
+          <span class="detail-label">📝 Observaciones:</span>
+          <span class="detail-value">{{ tarjeta.solicitud_tarjeta.observaciones }}</span>
+        </div>
+
+        <div class="detail-row" *ngIf="tarjeta.solicitud_tarjeta.examen_medico">
+          <span class="detail-label">🩺 Examen médico:</span>
+          <span class="detail-value">
+            <a [href]="tarjeta.solicitud_tarjeta.examen_medico" target="_blank" class="link-examen">
+              Ver documento
+            </a>
+          </span>
+        </div>
+      </div>
+
+      <!-- Información adicional -->
+      <div class="tarjeta-actions">
+        <div class="info-adicional">
+          <span class="info-solicitud">Solicitud #{{ tarjeta.id_solicitud }}</span>
+          <span class="info-fecha">{{ formatearFecha(tarjeta.solicitud_tarjeta.fecha_solicitud) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,328 @@
+<div class="institutos-container">
+  <div class="header">
+    <h1 class="title">🏥 Gestión de Institutos</h1>
+    <p class="subtitle">Administra y visualiza todos los centros de salud del sistema</p>
+  </div>
+
+  <!-- Filtros y controles -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <!-- Filtro por nombre -->
+      <div class="filter-group">
+        <label for="filtroInstituto" class="filter-label">Buscar por nombre:</label>
+        <input 
+          id="filtroInstituto"
+          type="text" 
+          [(ngModel)]="filtroNombre" 
+          placeholder="Escribe el nombre del instituto..."
+          class="filter-input">
+      </div>
+    </div>
+
+    <!-- Botones de control -->
+    <div class="controls">
+      <button (click)="limpiarFiltros()" class="btn-secondary">🗑️ Limpiar filtros</button>
+      <button (click)="abrirModalCreacion()" class="btn-success">➕ Crear Instituto</button>
+      <button (click)="recargar()" class="btn-primary" [disabled]="loading">
+        <span *ngIf="loading">🔄 Cargando...</span>
+        <span *ngIf="!loading">🔄 Recargar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Estadísticas -->
+  <div class="stats" *ngIf="!loading && !error">
+    <div class="stat-card">
+      <span class="stat-number">{{ institutos.length }}</span>
+      <span class="stat-label">Total de institutos</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ institutosFiltrados.length }}</span>
+      <span class="stat-label">Institutos mostrados</span>
+    </div>
+  </div>
+
+  <!-- Estados de carga y error -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando institutos...</p>
+  </div>
+
+  <div *ngIf="error" class="error-state">
+    <div class="error-icon">⚠️</div>
+    <h3>Error al cargar institutos</h3>
+    <p>{{ error }}</p>
+    <button (click)="recargar()" class="btn-primary">Intentar de nuevo</button>
+  </div>
+
+  <!-- Lista de institutos -->
+  <div *ngIf="!loading && !error" class="institutos-grid">
+    <div *ngIf="institutosFiltrados.length === 0" class="empty-state">
+      <div class="empty-icon">🏥</div>
+      <h3>No se encontraron institutos</h3>
+      <p>No hay institutos que coincidan con los filtros seleccionados.</p>
+    </div>
+
+    <!-- Tarjetas de institutos -->
+    <div *ngFor="let instituto of institutosFiltrados" class="instituto-card">
+      <div class="instituto-header">
+        <div class="instituto-avatar">
+          {{ instituto.nombre.charAt(0).toUpperCase() }}
+        </div>
+        <div class="instituto-info">
+          <h3 class="instituto-nombre">{{ instituto.nombre }}</h3>
+          <p class="instituto-id">ID: {{ instituto.id_centro }}</p>
+        </div>
+        <div class="instituto-badges">
+          <span class="badge badge-area">Área {{ instituto.id_area }}</span>
+        </div>
+      </div>
+
+      <div class="instituto-details">
+        <div class="detail-row" *ngIf="instituto.direccion">
+          <span class="detail-label">📍 Dirección:</span>
+          <span class="detail-value">{{ instituto.direccion }}</span>
+        </div>
+        
+        <div class="detail-row" *ngIf="instituto.telefono">
+          <span class="detail-label">📞 Teléfono:</span>
+          <span class="detail-value">{{ instituto.telefono }}</span>
+        </div>
+        
+        <div class="detail-row" *ngIf="instituto.email">
+          <span class="detail-label">📧 Email:</span>
+          <span class="detail-value">{{ instituto.email }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">🏥 ID Área:</span>
+          <span class="detail-value">{{ instituto.id_area }}</span>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="instituto-actions">
+        <button (click)="editarInstituto(instituto)" class="btn-action btn-edit" title="Editar instituto">
+          ✏️ Editar
+        </button>
+        <button 
+          (click)="eliminarInstituto(instituto)" 
+          class="btn-action btn-delete" 
+          [disabled]="estaEliminando(instituto.id_centro)"
+          title="Eliminar instituto">
+          <span *ngIf="!estaEliminando(instituto.id_centro)">🗑️ Eliminar</span>
+          <span *ngIf="estaEliminando(instituto.id_centro)">🔄 Eliminando...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Edición de Instituto -->
+<div *ngIf="mostrarModalEdicion" class="modal-overlay" (click)="cerrarModalEdicion()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>✏️ Editar Instituto</h2>
+      <button (click)="cerrarModalEdicion()" class="modal-close">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Información del Instituto -->
+      <div *ngIf="institutoEditando" class="instituto-info-modal">
+        <div class="info-row">
+          <span class="info-label">🏥 Nombre:</span>
+          <span class="info-value">{{ institutoEditando.nombre }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">🆔 ID Centro:</span>
+          <span class="info-value">{{ institutoEditando.id_centro }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">🏢 Área:</span>
+          <span class="info-value">{{ institutoEditando.id_area }}</span>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Campos editables</h3>
+
+        <form *ngIf="institutoEditando" class="instituto-form">
+          <div class="form-group">
+            <label for="nombreInstituto">🏥 Nombre del Instituto:</label>
+            <input
+              id="nombreInstituto"
+              type="text"
+              [(ngModel)]="institutoEditando.nombre"
+              name="nombre"
+              class="form-input"
+              placeholder="Nombre del instituto"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="direccionInstituto">📍 Dirección:</label>
+            <textarea
+              id="direccionInstituto"
+              [(ngModel)]="institutoEditando.direccion"
+              name="direccion"
+              class="form-textarea"
+              placeholder="Dirección completa del instituto"
+              rows="3"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="telefonoInstituto">📞 Teléfono:</label>
+            <input
+              id="telefonoInstituto"
+              type="tel"
+              [(ngModel)]="institutoEditando.telefono"
+              name="telefono"
+              class="form-input"
+              placeholder="Número de teléfono">
+          </div>
+
+          <div class="form-group">
+            <label for="emailInstituto">📧 Email:</label>
+            <input
+              id="emailInstituto"
+              type="email"
+              [(ngModel)]="institutoEditando.email"
+              name="email"
+              class="form-input"
+              placeholder="Correo electrónico">
+          </div>
+
+          <div class="form-group">
+            <label for="areaInstituto">🏢 ID Área:</label>
+            <input
+              id="areaInstituto"
+              type="number"
+              [(ngModel)]="institutoEditando.id_area"
+              name="id_area"
+              class="form-input"
+              placeholder="ID del área"
+              min="1"
+              required>
+          </div>
+
+          <!-- Mensaje de error -->
+          <div *ngIf="errorEdicion" class="error-message">
+            ❌ {{ errorEdicion }}
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button 
+        (click)="cerrarModalEdicion()" 
+        class="btn-secondary" 
+        [disabled]="loadingEdicion">
+        🚫 Cancelar
+      </button>
+      <button 
+        (click)="guardarCambiosInstituto()" 
+        class="btn-primary" 
+        [disabled]="loadingEdicion">
+        <span *ngIf="!loadingEdicion">💾 Guardar Cambios</span>
+        <span *ngIf="loadingEdicion">🔄 Guardando...</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Creación de Instituto -->
+<div *ngIf="mostrarModalCreacion" class="modal-overlay" (click)="cerrarModalCreacion()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>➕ Crear Nuevo Instituto</h2>
+      <button (click)="cerrarModalCreacion()" class="modal-close">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-section">
+        <h3>Información del nuevo instituto</h3>
+
+        <form class="instituto-form">
+          <div class="form-group">
+            <label for="nombreNuevoInstituto">🏥 Nombre del Instituto: *</label>
+            <input
+              id="nombreNuevoInstituto"
+              type="text"
+              [(ngModel)]="nuevoInstituto.nombre"
+              name="nombre"
+              class="form-input"
+              placeholder="Nombre del instituto"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="areaNuevoInstituto">🏢 ID Área:</label>
+            <input
+              id="areaNuevoInstituto"
+              type="number"
+              [(ngModel)]="nuevoInstituto.id_area"
+              name="id_area"
+              class="form-input"
+              placeholder="ID del área"
+              min="1">
+          </div>
+
+          <div class="form-group">
+            <label for="direccionNuevoInstituto">📍 Dirección:</label>
+            <textarea
+              id="direccionNuevoInstituto"
+              [(ngModel)]="nuevoInstituto.direccion"
+              name="direccion"
+              class="form-textarea"
+              placeholder="Dirección completa del instituto"
+              rows="3"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="telefonoNuevoInstituto">📞 Teléfono:</label>
+            <input
+              id="telefonoNuevoInstituto"
+              type="tel"
+              [(ngModel)]="nuevoInstituto.telefono"
+              name="telefono"
+              class="form-input"
+              placeholder="Número de teléfono">
+          </div>
+
+          <div class="form-group">
+            <label for="emailNuevoInstituto">📧 Email:</label>
+            <input
+              id="emailNuevoInstituto"
+              type="email"
+              [(ngModel)]="nuevoInstituto.email"
+              name="email"
+              class="form-input"
+              placeholder="Correo electrónico">
+          </div>
+
+          <!-- Mensaje de error -->
+          <div *ngIf="errorCreacion" class="error-message">
+            ❌ {{ errorCreacion }}
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button 
+        (click)="cerrarModalCreacion()" 
+        class="btn-secondary" 
+        [disabled]="loadingCreacion">
+        🚫 Cancelar
+      </button>
+      <button 
+        (click)="crearInstituto()" 
+        class="btn-success" 
+        [disabled]="loadingCreacion || !nuevoInstituto.nombre.trim()">
+        <span *ngIf="!loadingCreacion">➕ Crear Instituto</span>
+        <span *ngIf="loadingCreacion">🔄 Creando...</span>
+      </button>
+    </div>
+  </div>
+</div>

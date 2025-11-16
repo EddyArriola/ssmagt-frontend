@@ -63,7 +63,7 @@ export class TarjetaQrComponent implements OnInit, OnChanges {
     try {
       const qrData: QRCodeData = {
         id_tarjeta: this.tarjeta.id_tarjeta,
-        id_solicitud: this.tarjeta.id_solicitud,
+        id_solicitud: this.tarjeta.id_solicitud || 0,
         cui_ciudadano: this.cuiCiudadano,
         tipo_tarjeta: this.tarjeta.solicitud_tarjeta?.tipo_tarjeta || 1,
         fecha_emision: this.tarjeta.fecha_emision,
@@ -118,7 +118,7 @@ export class TarjetaQrComponent implements OnInit, OnChanges {
       this.isLoading = true;
       const qrData: QRCodeData = {
         id_tarjeta: this.tarjeta.id_tarjeta,
-        id_solicitud: this.tarjeta.id_solicitud,
+        id_solicitud: this.tarjeta.id_solicitud || 0,
         cui_ciudadano: this.cuiCiudadano,
         tipo_tarjeta: this.tarjeta.solicitud_tarjeta?.tipo_tarjeta || 1,
         fecha_emision: this.tarjeta.fecha_emision,

@@ -57,17 +57,28 @@ export class ActualizarDatosComponent implements OnInit {
       
       // Obtener ID del usuario del token
       const userId = this.authService.getUserId();
+      console.log('🔍 ActualizarDatos - UserId obtenido:', userId);
+      
       if (!userId) {
+        console.error('❌ No se pudo obtener el userId del token');
         this.router.navigate(['/login']);
         return;
       }
 
       this.userId = Number(userId);
+      
+      // Debug: Verificar rol y token
+      const role = this.authService.getNormalizedRole();
+      const tokenInfo = this.authService.getTokenInfo();
+      console.log('🔍 ActualizarDatos - Rol del usuario:', role);
+      console.log('🔍 ActualizarDatos - Info del token:', tokenInfo);
 
       // Cargar datos del usuario
+      console.log('📡 ActualizarDatos - Cargando datos del usuario ID:', this.userId);
       this.currentUser = await this.usuarioService.getUsuarioById(this.userId).toPromise() || null;
       
       if (this.currentUser) {
+        console.log('✅ ActualizarDatos - Datos del usuario cargados:', this.currentUser);
         // Prellenar el formulario con los datos actuales
         this.userForm.patchValue({
           nombres: this.currentUser.nombres,
@@ -79,10 +90,23 @@ export class ActualizarDatosComponent implements OnInit {
           email: this.currentUser.email || '',
           ocupacion: this.currentUser.ocupacion || ''
         });
+      } else {
+        console.error('❌ ActualizarDatos - No se pudieron cargar los datos del usuario');
       }
-    } catch (error) {
-      console.error('Error al cargar datos del usuario:', error);
-      this.submitError = 'Error al cargar los datos del usuario';
+    } catch (error: any) {
+      console.error('❌ ActualizarDatos - Error al cargar datos del usuario:', error);
+      
+      if (error?.status === 403) {
+        this.submitError = 'No tienes permisos para acceder a tus datos. Contacta al administrador.';
+        console.error('🚫 Error 403: El rol consultor podría no tener permisos para este endpoint');
+      } else if (error?.status === 401) {
+        this.submitError = 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.';
+        this.router.navigate(['/login']);
+      } else if (error?.status === 404) {
+        this.submitError = 'No se encontraron tus datos de usuario.';
+      } else {
+        this.submitError = 'Error al cargar los datos del usuario. Inténtalo más tarde.';
+      }
     } finally {
       this.isLoading = false;
     }

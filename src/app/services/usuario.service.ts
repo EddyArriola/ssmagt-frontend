@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CreateUsuarioDto, Usuario, UpdateUsuarioDto } from '../interfaces/usuario';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuarioService {
-  private apiUrl = 'http://localhost:3000'; // URL base del backend
+  private apiUrl = environment.apiUrl; // URL base del backend desde environment
 
   constructor(private http: HttpClient) { }
 

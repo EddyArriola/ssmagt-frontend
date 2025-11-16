@@ -6,6 +6,7 @@ import { CiudadanoService } from '../../../services/ciudadano.service';
 import { TarjetaService } from '../../../services/tarjeta.service';
 import { SolicitudTarjetaService } from '../../../services/solicitud-tarjeta.service';
 import { AuthService } from '../../../services/auth.service';
+import { PdfGeneratorService } from '../../../services/pdf-generator.service';
 import { TarjetaQrComponent } from '../../shared/tarjeta-qr/tarjeta-qr.component';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -67,7 +68,8 @@ export class TarjetasAprovadasComponent implements OnInit {
     private ciudadanoService: CiudadanoService, 
     private tarjetaService: TarjetaService,
     private solicitudTarjetaService: SolicitudTarjetaService,
-    private authService: AuthService
+    private authService: AuthService,
+    private pdfGeneratorService: PdfGeneratorService
   ) {}
 
   ngOnInit(): void {
@@ -80,11 +82,11 @@ export class TarjetasAprovadasComponent implements OnInit {
     const userRole = this.authService.getUserRole();
     console.log('🔍 Rol del usuario:', userRole);
     
-    if (userRole === 2 || userRole === '2') {
+    if (userRole === 2) {
       this.isMedicoUser = true;
       this.isCiudadanoUser = false;
       console.log('👨‍⚕️ Usuario identificado como médico');
-    } else if (userRole === 1 || userRole === '1') {
+    } else if (userRole === 1) {
       this.isCiudadanoUser = true;
       this.isMedicoUser = false;
       console.log('👤 Usuario identificado como ciudadano');
@@ -1081,6 +1083,91 @@ export class TarjetasAprovadasComponent implements OnInit {
     }
     
     return 'Médico no especificado';
+  }
+
+  /**
+   * Genera y descarga la constancia de tarjeta en PDF
+   */
+  async descargarConstanciaPDF(tarjeta: Tarjeta | tarjeta): Promise<void> {
+    try {
+      console.log('🔄 Generando constancia PDF para tarjeta:', tarjeta.id_tarjeta);
+      
+      // Verificar que la tarjeta tenga ID
+      if (!tarjeta.id_tarjeta) {
+        alert('❌ No se puede generar la constancia. ID de tarjeta no disponible.');
+        return;
+      }
+
+      // Adaptar la estructura de datos según el tipo de interface
+      let ciudadano: any;
+      let fechaEmision: string;
+      let fechaVencimiento: string;
+      let idSolicitud: number;
+
+      // Si es tipo 'Tarjeta' (con estructura nueva)
+      if ('solicitud_tarjeta' in tarjeta && tarjeta.solicitud_tarjeta) {
+        ciudadano = tarjeta.solicitud_tarjeta.usuario;
+        fechaEmision = typeof tarjeta.fecha_emision === 'string' ? tarjeta.fecha_emision : tarjeta.fecha_emision?.toISOString() || '';
+        fechaVencimiento = typeof tarjeta.fecha_vencimiento === 'string' ? tarjeta.fecha_vencimiento : tarjeta.fecha_vencimiento?.toISOString() || '';
+        idSolicitud = tarjeta.id_solicitud || 0;
+      } 
+      // Si es tipo 'tarjeta' (estructura anterior)
+      else if ('ciudadano' in tarjeta && tarjeta.ciudadano) {
+        ciudadano = {
+          nombres: tarjeta.ciudadano.nombres,
+          apellidos: tarjeta.ciudadano.apellidos,
+          cui: tarjeta.ciudadano.cui,
+          email: tarjeta.ciudadano.email,
+          telefono: tarjeta.ciudadano.telefono
+        };
+        fechaEmision = typeof tarjeta.fecha_emision === 'string' ? tarjeta.fecha_emision : tarjeta.fecha_emision.toISOString();
+        fechaVencimiento = typeof tarjeta.fecha_vencimiento === 'string' ? tarjeta.fecha_vencimiento : tarjeta.fecha_vencimiento?.toISOString() || '';
+        idSolicitud = tarjeta.id_solicitud || 0;
+      }
+      // Si tiene información directa en solicitud_tarjeta pero estructura diferente
+      else if ('solicitud_tarjeta' in tarjeta && tarjeta.solicitud_tarjeta?.usuario) {
+        ciudadano = tarjeta.solicitud_tarjeta.usuario;
+        fechaEmision = typeof tarjeta.fecha_emision === 'string' ? tarjeta.fecha_emision : tarjeta.fecha_emision?.toISOString() || '';
+        fechaVencimiento = typeof tarjeta.fecha_vencimiento === 'string' ? tarjeta.fecha_vencimiento : tarjeta.fecha_vencimiento?.toISOString() || '';
+        idSolicitud = tarjeta.id_solicitud || 0;
+      } else {
+        alert('❌ No se puede generar la constancia. Estructura de datos no compatible.');
+        return;
+      }
+
+      const nombreCiudadano = `${ciudadano?.nombres || ''} ${ciudadano?.apellidos || ''}`.trim();
+      
+      if (!nombreCiudadano || !ciudadano?.cui) {
+        alert('❌ No se puede generar la constancia. Datos del ciudadano incompletos.');
+        return;
+      }
+
+      // Crear objeto adaptado para el tipo Tarjeta que espera el servicio
+      const tarjetaAdaptada: Tarjeta = {
+        id_tarjeta: tarjeta.id_tarjeta,
+        id_solicitud: idSolicitud,
+        fecha_emision: fechaEmision,
+        fecha_vencimiento: fechaVencimiento,
+        estado: tarjeta.estado || 2, // Asumimos aprobada si no hay estado
+        solicitud_tarjeta: {
+          id_centro_de_salud: ('solicitud_tarjeta' in tarjeta ? tarjeta.solicitud_tarjeta?.id_centro_de_salud : tarjeta.solicitud?.id_centro_de_salud) || 0,
+          id_ciudadano: ('solicitud_tarjeta' in tarjeta ? tarjeta.solicitud_tarjeta?.id_ciudadano : tarjeta.solicitud?.id_ciudadano) || 0,
+          fecha_solicitud: ('solicitud_tarjeta' in tarjeta ? tarjeta.solicitud_tarjeta?.fecha_solicitud : tarjeta.solicitud?.fecha_solicitud) || fechaEmision,
+          tipo_tarjeta: ('solicitud_tarjeta' in tarjeta ? tarjeta.solicitud_tarjeta?.tipo_tarjeta : tarjeta.solicitud?.tipo_tarjeta) || 1,
+          estado: tarjeta.estado || 2,
+          usuario: ciudadano
+        }
+      };
+
+      // Generar PDF usando el servicio
+      await this.pdfGeneratorService.generarConstanciaTarjeta(tarjetaAdaptada);
+      
+      console.log('✅ Constancia PDF generada y descargada exitosamente');
+      
+    } catch (error) {
+      console.error('❌ Error al generar constancia PDF:', error);
+      alert('❌ Error al generar la constancia. Por favor intenta de nuevo.');
+    }
   }
 
 }

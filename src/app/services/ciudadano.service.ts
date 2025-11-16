@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, forkJoin, throwError } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { tarjeta } from '../interfaces/tarjetas';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class CiudadanoService {
   private myApiUrl: string;
   
   constructor(private http: HttpClient) {
-    this.myAppUrl = 'http://localhost:3000/';
+    this.myAppUrl = `${environment.apiUrl}/`;
     this.myApiUrl = 'tarjeta/usuario/';
   }
 

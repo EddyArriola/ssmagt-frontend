@@ -1359,3 +1359,74 @@
     font-size: 14px;
   }
 }
+
+/* =============== ESTILOS PARA BOTONES DE ACCIÓN =============== */
+
+.card-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e9ecef;
+  justify-content: flex-start;
+}
+
+.qr-button,
+.pdf-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.qr-button {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.qr-button:hover {
+  background-color: #138496;
+  transform: translateY(-1px);
+}
+
+.pdf-button {
+  background-color: #dc3545;
+  color: white;
+}
+
+.pdf-button:hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+}
+
+.qr-button:focus,
+.pdf-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.qr-button:active,
+.pdf-button:active {
+  transform: translateY(0);
+}
+
+/* Responsive para botones */
+@media (max-width: 768px) {
+  .card-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .qr-button,
+  .pdf-button {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -2,12 +2,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Tarjeta, TarjetasCentroResponse } from '../interfaces/tarjeta';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TarjetaService {
-  private apiUrl = 'http://localhost:3000'; // URL base del backend
+  private apiUrl = environment.apiUrl; // URL base del backend
 
   constructor(private http: HttpClient) { }
 

@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { switchMap, catchError, map } from 'rxjs/operators';
 import { CreateSolicitudTarjetaDto, SolicitudTarjetaResponse, CentroDeSalud, SolicitudPendiente, UpdateSolicitudTarjetaDto } from '../interfaces/solicitud-tarjeta';
 import { AuthService } from './auth.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,7 @@ export class SolicitudTarjetaService {
     private http: HttpClient,
     private authService: AuthService
   ) {
-    this.myAppUrl = 'http://localhost:3000/';
+    this.myAppUrl = `${environment.apiUrl}/`;
     this.myApiUrl = 'solicitud-tarjeta';
   }
 
